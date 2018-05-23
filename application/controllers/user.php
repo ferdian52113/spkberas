@@ -959,10 +959,72 @@ class User extends CI_Controller {
                 $data['provinsi_pilih'] = $provinsi;
 
                 //reverse bulan dan prov menjadi angka
-                $tahun=2018;
+                $tahun=2017;
                 $prov = $this->user_model->ubah_provinsi($provinsi);
+
+                if($prov==01) {
+                    $alpha_luas = 0.0788369192876066; $beta_luas = 0; $gamma_luas = 0.586779366461092;
+                    $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
+                    $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
+                    $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
+                } else if($prov==02) {
+                    $alpha_luas = 0; $beta_luas = 0; $gamma_luas = 0;
+                    $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
+                    $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
+                    $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
+                } else if($prov==03) {
+                    $alpha_luas = 0; $beta_luas = 0; $gamma_luas = 0;
+                    $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
+                    $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
+                    $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
+                } else if($prov==04) {
+                    $alpha_luas = 0; $beta_luas = 0; $gamma_luas = 0;
+                    $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
+                    $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
+                    $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
+                } else if($prov==05) {
+                    $alpha_luas = 0; $beta_luas = 0; $gamma_luas = 0;
+                    $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
+                    $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
+                    $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
+                } else if($prov==06) {
+                    $alpha_luas = 0; $beta_luas = 0; $gamma_luas = 0;
+                    $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
+                    $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
+                    $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
+                } else if($prov==07) {
+                    $alpha_luas = 0; $beta_luas = 0; $gamma_luas = 0;
+                    $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
+                    $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
+                    $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
+                } else if($prov==08) {
+                    $alpha_luas = 0; $beta_luas = 0; $gamma_luas = 0;
+                    $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
+                    $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
+                    $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
+                } else if($prov==09) {
+                    $alpha_luas = 0; $beta_luas = 0; $gamma_luas = 0;
+                    $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
+                    $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
+                    $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
+                } else if($prov==10) {
+                    $alpha_luas = 0; $beta_luas = 0; $gamma_luas = 0;
+                    $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
+                    $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
+                    $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
+                } else if($prov==11) {
+                    $alpha_luas = 0; $beta_luas = 0; $gamma_luas = 0;
+                    $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
+                    $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
+                    $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
+                }
+
+                $this->forecastLuasTanam($tahun,$season_length = 12, $alpha_luas, $beta_luas, $gamma_luas,$loc=$prov);
                 $this->forecastProduksi($tahun,$prov);
                 $this->forecastHarga($tahun,$prov);
+                /*$this->forecastCurahHujan($season_length = 12, $alpha_curah, $beta_curah, $gamma_curah,$loc=$prov);
+                $this->forecastBencana($season_length = 12, $alpha_bencana, $beta_bencana, $gamma_bencana,$loc=$prov);
+                $this->forecastHama($season_length = 12, $alpha_hama, $beta_hama, $gamma_hama,$loc=$prov);*/
                 
                 
                 exit();
@@ -1112,6 +1174,126 @@ class User extends CI_Controller {
             );
             print_r($data_prediksi); echo "<br>";
             $a++;
+        }
+    }
+
+    function forecastLuasTanam($tahun,$season_length, $alpha, $beta, $gamma,$loc) {
+    $data = array (194599,76497,121151,260823,222666,125537,61885,78181,50220,123550,282295,340623,148100,91611,166660,259635,185047,117545,96525,89635,42683,92042,257353,329541,206084,113830,141104,229219,235581,134658,136069,94785,105647,178140,258919,279910,176936,130045,134839,189167,212180,161052,115853,60388,65371,56844,222749,382951,222048,105671,102665,226562,254944,135609,110371,68651,60463,81077,240507,363323,216940,112426,112955,225483,247383,143133,132867,102240,65581,81148,183321,364507,245689,120827,124884,196627,218754,195425,129256,105910,73512,66793,176480,326378,278742,119919,100666,194599,247756,152509,94717,84967,69417,41005,87356,348383,121226,101740,191464,245142,152457,93894,83590,68699,34712,79631,348189,129427);
+    
+    $tahun_akhir_forecast=2016;
+    $length_forecast = ($tahun-$tahun_akhir_forecast)*12;
+    // Menghitung initial level
+    $initial_level = 0;
+        for($i = 0; $i < $season_length; $i++) {
+            $initial_level += $data[$i];
+        }
+    $initial_level /= $season_length;  
+
+    //Menghitung initial trend
+    $trend1 = 0;
+        for($i = 0; $i < $season_length; $i++) {
+            $trend1 += $data[$i];
+        }
+    $trend1 /= $season_length;
+    
+    $trend2 = 0;
+        for($i = $season_length; $i < 2*$season_length; $i++) {
+            $trend2 += $data[$i];
+        }
+    $trend2 /= $season_length;
+
+    $initial_trend = ($trend2 - $trend1) / $season_length;
+    
+    // Menghitung initial season
+    $season = array_fill(0, count($data), 0);
+        for($i = 0; $i < $season_length; $i++) {
+            $season[$i] = $data[$i] - $initial_level;
+        }
+    
+    $holt_winters = array_fill(0, count($data)+$length_forecast, 0);
+    $regression = array_fill(0, count($data)+$length_forecast, 0);
+    $level = $initial_level;
+    $trend = $initial_trend;
+    $m=1;
+        for($i=0;$i<count($data)+$length_forecast;$i++){
+            if($i<$season_length) {
+
+            } else if ($i>=count($data)){
+                $alpha_level = $level;
+                $beta_trend = $trend*$m;
+                $season[$i] = $season[$i%$season_length+(count($data)-$season_length)]; 
+
+                if($loc==01) {
+                    $regression[$i] = -78990.3064005526 + 1.5202869917021*$alpha_level + 0*$beta_trend + 1.01128062797808 * $season[$i];
+                } else if($loc==02) {
+                    $regression[$i] = -157663.557244406 + 2.37814702176707*$alpha_level + 42.7692417201128*$beta_trend + 1.02761909746456* $season[$i];
+                } else if($loc==03) {
+                    $regression[$i] = -24406.6292092276 + 1.25174874219277*$alpha_level + 4.41452932029465*$beta_trend + 1.02323446514704 * $season[$i];
+                } else if($loc==04) {
+                    $regression[$i] =  67949419.2020113 + 1.12783457524249*$alpha_level + 215959.462573575*$beta_trend + 1.02867318606618 * $season[$i];
+                } else if($loc==05) {
+                    $regression[$i] = -3.27418092638254E-11 + 1*$alpha_level + -3.10036691064369E-15*$beta_trend + 1 * $season[$i];
+                } else if($loc==06) {
+                    $regression[$i] = -478.17186156489 + 1.01184610400827*$alpha_level + -0.0804756783555209*$beta_trend + 1.00594416094877 * $season[$i];
+                } else if($loc==07) {
+                    $regression[$i] = 73198.6660710314 + -0.763106500885188*$alpha_level + 24.9495351940806*$beta_trend + 0.951496584215959 * $season[$i];
+                } else if($loc==08) {
+                    $regression[$i] = -2166.86018826386 + 0.732384663813179*$alpha_level + -29.4173666932935*$beta_trend + 1.13384611870156 * $season[$i];
+                } else if($loc==09) {
+                    $regression[$i] = -6.13908923696727E-11 + 1*$alpha_level + 8.38708377611989E-15*$beta_trend + 1 * $season[$i];
+                } else if($loc==10) {
+                    $regression[$i] = -11067.3232420229 + 9.05444880796968*$alpha_level + 260.948287783574*$beta_trend + 1.22858168206032 * $season[$i];
+                } else if($loc==11) {
+                    $regression[$i] = 10135.5522619964 + 0.0374029780864185*$alpha_level + 0.85900464816731*$beta_trend + 0.0996083133906275 * $season[$i];
+                } 
+                $m++;
+            } else {
+                $temp_level = $level;
+                $temp_trend = $trend;
+                $level = $alpha * ($data[$i] - $season[$i-$season_length]) + (1.0 - $alpha) * ($temp_level + $temp_trend);
+                $trend = $beta * ($level - $temp_level) + ( 1.0 - $beta ) * $temp_trend;
+                $season[$i] = $gamma * ($data[$i] - $level) + (1.0 - $gamma) * $season[$i-$season_length];
+                $holt_winters[$i] = $temp_level + $temp_trend + $season[$i-$season_length];
+
+                if($loc==01) {
+                    $regression[$i] = -78990.3064005526 + 1.5202869917021*$level + 0*$trend + 1.01128062797808 * $season[$i];
+                } else if($loc==02) {
+                    $regression[$i] = -157663.557244406 + 2.37814702176707*$level + 42.7692417201128*$trend + 1.02761909746456* $season[$i];
+                } else if($loc==03) {
+                    $regression[$i] = -24406.6292092276 + 1.25174874219277*$level + 4.41452932029465*$trend + 1.02323446514704 * $season[$i];
+                } else if($loc==04) {
+                    $regression[$i] =  67949419.2020113 + 1.12783457524249*$level + 215959.462573575*$trend + 1.02867318606618 * $season[$i];
+                } else if($loc==05) {
+                    $regression[$i] = -3.27418092638254E-11 + 1*$level + -3.10036691064369E-15*$trend + 1 * $season[$i];
+                } else if($loc==06) {
+                    $regression[$i] = -478.17186156489 + 1.01184610400827*$level + -0.0804756783555209*$trend + 1.00594416094877 * $season[$i];
+                } else if($loc==07) {
+                    $regression[$i] = 73198.6660710314 + -0.763106500885188*$level + 24.9495351940806*$trend + 0.951496584215959 * $season[$i];
+                } else if($loc==08) {
+                    $regression[$i] = -2166.86018826386 + 0.732384663813179*$level + -29.4173666932935*$trend + 1.13384611870156 * $season[$i];
+                } else if($loc==09) {
+                    $regression[$i] = -6.13908923696727E-11 + 1*$level + 8.38708377611989E-15*$trend + 1 * $season[$i];
+                } else if($loc==10) {
+                    $regression[$i] = -11067.3232420229 + 9.05444880796968*$level + 260.948287783574*$trend + 1.22858168206032 * $season[$i];
+                } else if($loc==11) {
+                    $regression[$i] = 10135.5522619964 + 0.0374029780864185*$level + 0.85900464816731*$trend + 0.0996083133906275 * $season[$i];
+                } 
+            }
+        }
+    //print_r($regression);
+        $a=1;
+        $k = count($regression)-$season_length;
+        for ($i=1; $i <= 12; $i++) { 
+                $tanggal = $tahun.'-'.$a.'-01';
+                $date_now = date("Y-m-d",strtotime($tanggal));
+
+                $data_prediksi = array(                
+                            'id_waktu'  => $date_now,
+                            'prediksi_luas_tanam'  => round($regression[$k])          
+                );
+                print_r($data_prediksi); echo "<br>";
+                $a++;$k++;
+
         }
     }
 
