@@ -65,14 +65,10 @@
                                     $id=$data['id_setting'];
                                     if($this->input->post('is_submitted')){
                                         $status = $set_value['status_HET']; 
-                                        $prod_jawa = $set_value['prod_jawa'];
-                                        $prod_luarjawa = $set_value['prod_luarjawa'];
 
                                     }
                                     else {
                                         $status=$data['status_HET'];
-                                        $prod_jawa = $data['produktivitas_jawa'];
-                                        $prod_luarjawa = $data['produktivitas_luarjawa'];
 
                                         if($status=='YA') {
                                           $pend_stab='Harga Eceran Tertinggi';
@@ -85,14 +81,6 @@
                                   <div class="col-md-4">
                                       <label>Pendekatan Stabilitas</label>
                                       <input type="text" value="<?php echo $pend_stab?>" class="form-control" disabled="" ">
-                                  </div>
-                                  <div class="col-md-4">
-                                      <label>Produktivitas Produksi Jawa</label>
-                                      <input type="text" class="form-control" value ="<?php echo $prod_jawa;?> Ton" disabled="" ">
-                                  </div>
-                                  <div class="col-md-4">
-                                      <label>Produktivitas Produksi Luar Jawa</label>
-                                      <input type="text" class="form-control" value ="<?php echo $prod_luarjawa;?> Ton" disabled="" ">
                                   </div>
                               </div>
                               <div class="m-form__actions">
@@ -116,18 +104,6 @@
                                                                   <option value="YA" <?php if($pend_stab=='Harga Eceran Tertinggi') echo "selected";?>>Harga Eceran Tertinggi</option>
                                                                   <option value="TIDAK" <?php if($pend_stab=='Standar Deviasi 12 Bulan') echo "selected";?>>Standar Deviasi 12 Bulan</option>
                                                               </select>
-                                                          </div>
-                                                      </div>
-                                                      <div class="form-group m-form__group row">
-                                                        <div class="col-md-12">
-                                                              <label>Produktivitas Produksi Jawa (Ton)</label>
-                                                              <input type="number" step="any" name="prod_jawa" class="form-control" value ="<?php echo $prod_jawa;?>">
-                                                          </div>
-                                                      </div>
-                                                      <div class="form-group m-form__group row">
-                                                          <div class="col-md-12">
-                                                              <label>Produktivitas Produksi Luar Jawa (Ton)</label>
-                                                              <input type="number" step="any" name="prod_luarjawa" class="form-control" value ="<?php echo $prod_luarjawa;?>">
                                                           </div>
                                                       </div>
                                                       <div class="m-form__actions">

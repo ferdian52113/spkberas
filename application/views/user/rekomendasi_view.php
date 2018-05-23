@@ -137,14 +137,12 @@
                             <?php 
                                 $statusHET = $status_HET;
                                 $HET = $HET;
-                                $produktivitas = $produktivitas;
                                 if($aktual) {
                                     $harga= $rekomendasi[0]['aktual_harga'];
                                     $luas = $rekomendasi[0]['aktual_luastanam'];
                                     $prod = $rekomendasi[0]['aktual_produksi'];
                                     $curahhujan= $rekomendasi[0]['aktual_curahhujan'];
                                     $banjir= $rekomendasi[0]['aktual_banjir'];
-                                    $longsor= $rekomendasi[0]['aktual_longsor'];
                                     $hama=$rekomendasi[0]['aktual_hama'];
                                     $luastanam4bulansebelum = $luas_tanam_empat_bulan_sebelum;
                                 } else {
@@ -153,7 +151,6 @@
                                     $prod = $rekomendasi[0]['prediksi_produksi'];
                                     $curahhujan= $rekomendasi[0]['prediksi_curahhujan'];
                                     $banjir= $rekomendasi[0]['prediksi_banjir'];
-                                    $longsor= $rekomendasi[0]['prediksi_longsor'];
                                     $hama= $rekomendasi[0]['prediksi_hama'];
                                     $luastanam4bulansebelum = $luas_tanam_empat_bulan_sebelum;
                                 }
@@ -203,7 +200,7 @@
                                 }
 
                                 //Menentukan bencanaa alam
-                                if($banjir == 1 OR $longsor==1) {
+                                if($banjir == 1) {
                                     $bencana = 'Ada Bencana';
                                 } else {
                                     $bencana = 'Tidak Ada Bencana';
@@ -211,7 +208,7 @@
 
                                 //Menentukan hamaa
                                 $prosentaseHama = $hama/$luastanam4bulansebelum * 100;
-                                if($prosentaseHama > 5) {
+                                if($prosentaseHama > 10) {
                                     $hama = 'Ada Hama';
                                 } else {
                                     $hama = 'Tidak Ada Hama';
@@ -234,9 +231,78 @@
                                     echo "if ".$rule->stabilitas_harga." and ".$rule->musim." and ".$rule->bencana." and ".$rule->hama." then ".$rule->id_rekomendasi;
                                     echo '<br>';
                                 }
+
+                                /*if($stabilitas_harga=='Stabil') {
+                                    if($musim=='Penghujan') {
+                                        if($bencana=='Tidak Ada Bencana') {
+                                            if($hama=='Tidak Ada Hama') {
+                                                $namarekomendasi = 'R1';
+                                            } else if ($hama=='Ada Hama') {
+                                                $namarekomendasi = 'R2';
+                                            }
+                                        } else if ($bencana=='Ada Bencana') {
+                                            if($hama=='Tidak Ada Hama') {
+                                                $namarekomendasi = 'R3';
+                                            } else if ($hama=='Ada Hama') {
+                                                $namarekomendasi = 'R4';
+                                            }
+                                        }
+                                    } else if ($musim=='Kemarau') {
+                                        if($bencana=='Tidak Ada Bencana') {
+                                            if($hama=='Tidak Ada Hama') {
+                                                $namarekomendasi = 'R5';
+                                            } else if ($hama=='Ada Hama') {
+                                                $namarekomendasi = 'R6';
+                                            }
+                                        } else if ($bencana=='Ada Bencana') {
+                                            if($hama=='Tidak Ada Hama') {
+                                                $namarekomendasi = 'R7';
+                                            } else if ($hama=='Ada Hama') {
+                                                $namarekomendasi = 'R8';
+                                            }
+                                        }
+                                    }
+                                } else if ($stabilitas_harga=='Tidak Stabil') {
+                                    if($musim=='Penghujan') {
+                                        if($bencana=='Tidak Ada Bencana') {
+                                            if($hama=='Tidak Ada Hama') {
+                                                $namarekomendasi = 'R9';
+                                            } else if ($hama=='Ada Hama') {
+                                                $namarekomendasi = 'R10';
+                                            }
+                                        } else if ($bencana=='Ada Bencana') {
+                                            if($hama=='Tidak Ada Hama') {
+                                                $namarekomendasi = 'R11';
+                                            } else if ($hama=='Ada Hama') {
+                                                $namarekomendasi = 'R12';
+                                            }
+                                        }
+                                    } else if ($musim=='Kemarau') {
+                                        if($bencana=='Tidak Ada Bencana') {
+                                            if($hama=='Tidak Ada Hama') {
+                                                $namarekomendasi = 'R13';
+                                            } else if ($hama=='Ada Hama') {
+                                                $namarekomendasi = 'R14';
+                                            }
+                                        } else if ($bencana=='Ada Bencana') {
+                                            if($hama=='Tidak Ada Hama') {
+                                                $namarekomendasi = 'R15';
+                                            } else if ($hama=='Ada Hama') {
+                                                $namarekomendasi = 'R16';
+                                            }
+                                        }
+                                    }
+                                }
+
+                                foreach ($rule_based_system as $rule) {
+                                    if($rule->id_rekomendasi==$namarekomendasi){
+                                        $rekomendasi1 = $rule->rekomendasi_1;
+                                        $rekomendasi2 = $rule->rekomendasi_2;
+                                        $rekomendasi3 = $rule->rekomendasi_3; 
+                                    }
+                                }*/
                                 print_r('status HET : '.$status_HET.'<br>');
                                 print_r('HET : '.$HET.'<br>');
-                                print_r('produktivitas : '.$produktivitas.'<br>');
                                 print_r('harga : '.$harga.'<br>');
                                 print_r('luastanam : '.$luas.'<br>');
                                 print_r('luastanam4bulansebelum : '.$luastanam4bulansebelum.'<br>');
@@ -248,7 +314,6 @@
                                 print_r('hama : '.$hama.'<br>');
                                 print_r('prosentaseHama : '.$prosentaseHama.'<br>');
                                 print_r('banjir : '.$banjir.'<br>');
-                                print_r('longsor : '.$longsor.'<br>');
                                 print_r('namarekomendasi : '.$namarekomendasi.'<br>');
 
                                 

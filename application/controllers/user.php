@@ -157,11 +157,6 @@ class User extends CI_Controller {
 
                 $data['status_HET'] = $data['pengaturan'][0]['status_HET'];
                 $data['HET'] = $this->user_model->get_HET($prov);
-                if ($prov=='01' || $prov=='02' || $prov=='03') {
-                    $data['produktivitas'] = $data['pengaturan'][0]['produktivitas_jawa']; 
-                } else {
-                    $data['produktivitas'] = $data['pengaturan'][0]['produktivitas_luarjawa'];
-                }
 
                 $cek_data_aktual = $this->user_model->cek_waktu_aktual($bulan,$tahun,$prov);
                 $cek_data_prediksi = $this->user_model->cek_waktu_prediksi($bulan,$tahun,$prov);
@@ -922,9 +917,7 @@ class User extends CI_Controller {
             }
             else {
                 $data_setting = array(                
-                        'status_HET'  => $this->input->post('status_HET'),
-                        'produktivitas_jawa'  => $this->input->post('prod_jawa'),
-                        'produktivitas_luarjawa'  => $this->input->post('prod_luarjawa'),           
+                        'status_HET'  => $this->input->post('status_HET'),        
                 );
                 //print_r($data_setting);exit();
                 $this->user_model->updateData('id_setting',$id,'setting',$data_setting);
