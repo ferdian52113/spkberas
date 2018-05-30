@@ -721,6 +721,7 @@ class User extends CI_Controller {
             $data['halaman'] = 'User';
             $data['provinsi'] = $this->user_model->get_provinsi();
             $data['user'] = $this->user_model->get_user();
+            //print_r($data['provinsi'][0]['provinsi']);exit();
             $this->load->view('user/manajemenuser_view',$data);
         }
     }
@@ -770,6 +771,36 @@ class User extends CI_Controller {
                 window.location.href='".base_url("user/manajemenUser")."';</script>";
             }
         }
+    }
+
+    public function editUser($id_user){
+        $lembaga = $this->input->post('lembaga');     
+        $username = $this->input->post('username'); 
+        $password = $this->input->post('password');
+        $role = $this->input->post('role');       
+        $provinsi = $this->input->post('provinsi');    
+
+        if ($role=='Admin Pusat') {
+            $data_user = array(                
+                'lembaga'  => $lembaga,
+                'username'  => $username,
+                'password'  => $password,
+                'role'  => $role               
+            );
+            $this->user_model->updateData('id_user',$id_user,'user',$data_user);
+        } else {
+            $data_user = array(                
+                    'lembaga'  => $lembaga,
+                    'username'  => $username,
+                    'password'  => $password,
+                    'role'  => $role,
+                    'provinsi'  => $provinsi,                
+            );
+            $this->user_model->updateData('id_user',$id_user,'user',$data_user);
+        }
+        $message = "User berhasil diubah.";
+        echo "<script type='text/javascript'>alert('$message');
+        window.location.href='".base_url("user/manajemenUser")."';</script>";
     }
 
     public function hapusUser($id) {

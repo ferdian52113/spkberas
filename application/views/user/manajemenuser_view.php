@@ -88,9 +88,6 @@
                 <table class="m-datatable" id="html_table" width="100%">
                   <thead>
                     <tr>
-                      <th title="Field #1">
-                        No
-                      </th>
                       <th title="Field #2">
                         Lembaga
                       </th>
@@ -114,11 +111,24 @@
                   <tbody>
                     <?php 
                         $no = 0;
-                        foreach ($user as $data) { ?>
+                        foreach ($user as $data) {
+                        $id_user=$data['id_user']; 
+                        if($this->input->post('is_submitted')){
+                            $lembaga = $set_value['lembaga'];
+                            $username      = $set_value('username');
+                            $password   = $set_value('password');
+                            $role   = $set_value('role');
+                            $loc   = $set_value('provinsi');
+                        }
+                        else {
+                            $lembaga=$data['lembaga'];
+                            $username=$data['username'];
+                            $password = $data['password'];
+                            $role = $data['role'];
+                            $loc = $data['provinsi'];
+                        }
+                    ?>
                         <tr>
-                          <td>
-                            <?php $no++; echo $no;?>
-                          </td>
                           <td>
                             <?php echo $data['lembaga']; ?>
                           </td>
@@ -135,6 +145,7 @@
                             <?php echo $data['provinsi'];?>
                           </td>
                           <td>
+                             <button data-toggle="modal" data-target="#editUser<?php echo $id_user?>" class="btn m-btn m-btn--pill m-btn--air m-btn--gradient-from-danger m-btn--gradient-to-warning">Edit</button>
                             <?=anchor('user/hapusUser/'.$data['id_user'], 'Hapus', [
                               'class' => 'btn m-btn m-btn--pill m-btn--air m-btn--gradient-from-accent m-btn--gradient-to-success',
                               'role'  => 'button',
@@ -142,6 +153,66 @@
                             ])?>
                           </td>
                         </tr>
+                      <div class="modal inmodal fade" id="editUser<?php echo $id_user?>" tabindex="-1" role="dialog"  aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                    <h3 class="modal-title">Edit User</h3><br>
+                                </div>
+                                <div class="modal-body">                
+                                  <div class="row">
+                                          <div class="col-xl-12">
+                                            <form action="<?php echo base_url('user/editUser/'.$id_user);?>" method="post">
+                                            <div class="form-group m-form__group row">
+                                                <div class="col-md-12">
+                                                    <label>Lembaga</label>
+                                                    <input type="text" name="lembaga" value="<?= $lembaga?>" class="form-control" required="">
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <label>Nama Kondisi</label>
+                                                    <input type="text" name="username" value="<?= $username?>" class="form-control" required="">
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <label>Password</label>
+                                                    <input type="password" name="password" value="<?= $password?>" class="form-control" required="">
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <label>Role</label>
+                                                    <select name="role" required="true" class="form-control m-input m-input--air">
+                                                        <option value="0" <?php if($role==0) echo "selected";?>>Admin Pusat</option>
+                                                        <option value="1" <?php if($role==1) echo "selected";?>>Admin Provinsi</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <label>Provinsi</label>
+                                                    <select name="provinsi" required="true" class="form-control m-input m-input--air">
+                                                        <?php foreach ($provinsi as $prov) {
+                                                          if($prov['provinsi'] == $loc){ 
+                                                              echo '<option selected="selected" value="'.$prov['id_provinsi'].'">'.$prov['provinsi'].'</option>';
+                                                            
+                                                          }
+                                                          else {
+                                                            echo '<option value="'.$prov['id_provinsi'].'">'.$prov['provinsi'].'</option>';
+                                                          }
+
+                                                          } ?> 
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="m-portlet__foot m-portlet__foot--fit">
+                                                <div class="m-form__actions">
+                                                    <button type="button" data-dismiss="modal" class="btn m-btn--pill m-btn m-btn--gradient-from-danger m-btn--gradient-to-warning" value="batal">Batal</button>
+                                                <button class="btn m-btn--pill m-btn m-btn--gradient-from-primary m-btn--gradient-to-info" type="submit">Simpan</button>
+                                                </div>
+                                            </div>
+                                            </form>  
+                                          </div>
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <?php }?>
                   </tbody>
                 </table>
