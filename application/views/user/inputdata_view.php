@@ -64,17 +64,9 @@
                                         <?php echo $this->session->flashdata('msg'); ?>
                                         </div>
                                         <div class="form-group m-form__group row">
-                                                <div class="col-md-3">
-                                                    <label>Kategori</label><br>
-                                                    <select name="kategori" id="kategori" required="true" class="form-control m-input m-input--air">
-                                                        <option value="">-Pilih Kategori-</option>
-                                                        <option value="Aktual">Aktual</option>
-                                                        <option value="Prediksi">Prediksi</option>                  
-                                                    </select>
-                                                </div>
                                                 <div class="col-md-4">
                                                     <label>Provinsi</label><br>
-                                                    <select name="prov" required="true" class="form-control  m-input m-input--air">
+                                                    <select name="prov" required="true" class="form-control  m-input m-input--air" required="">
                                                         <option value="">-Pilih Provinsi-</option>
                                                         <?php if($this->session->userdata('role')==0)
                                                             foreach ($provinsi as $prov) {                   
@@ -84,19 +76,21 @@
                                                         <?php } ?>
                                                     </select>
                                                 </div>
-                                                <div class="col-md-2">
+                                                <div class="col-md-4">
                                                     <label>Tahun</label><br>
-                                                    <select name="tahun" required="true" class="form-control m-input m-input--air">
+                                                    <select name="tahun" required="true" class="form-control m-input m-input--air" required="">
                                                         <option value="">-Pilih Tahun-</option>
                                                         <option value="2017">2017</option>
                                                         <option value="2018">2018</option>
                                                         <option value="2019">2019</option>
                                                         <option value="2020">2020</option>
+                                                        <option value="2021">2021</option>
+                                                        <option value="2022">2022</option>
                                                     </select>
                                                 </div>
-                                                <div class="col-md-3">
+                                                <div class="col-md-4">
                                                     <label>Bulan</label><br>
-                                                    <select name="bulan" required="true" class="form-control m-input m-input--air">
+                                                    <select name="bulan" required="true" class="form-control m-input m-input--air" required="">
                                                         <option value="">-Pilih Bulan-</option>
                                                         <?php foreach ($bulan as $bulan) {                   
                                                             echo '<option value="'.$bulan['bulan'].'">'.$bulan['bulan'].'</option>';
@@ -105,16 +99,38 @@
                                                     </select>
                                                 </div>
                                         </div>
+                                        <hr>
                                         <div class="form-group m-form__group row">
-                                                <div class="col-md-6">
+                                                <div class="col-md-4">
                                                     <label>Harga (Rp)</label><br>
                                                     <input type="text" name="harga" class="form-control good">
                                                 </div>
-                                                <div class="col-md-6">
+                                                <div class="col-md-4">
                                                     <label>Produksi (Ton)</label><br>
-                                                    <input type="text" name="produksi" class="form-control good2">
+                                                    <input type="number" step="any" name="produksi" class="form-control">
                                                 </div>
-                                            </div>
+                                                <div class="col-md-4">
+                                                    <label>Luas Tanam (Ha)</label><br>
+                                                    <input type="number" step="any" name="luastanam" class="form-control">
+                                                </div>
+                                        </div>
+                                        <div class="form-group m-form__group row">
+                                                <div class="col-md-4">
+                                                    <label>Curah Hujan (mm)</label><br>
+                                                    <input type="number" step="any" name="curahhujan" class="form-control">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label>Terdapat Bencana Banjir</label><br>
+                                                    <select name="banjir" required="true" class="form-control m-input m-input--air">
+                                                        <option value="0">Tidak</option>
+                                                        <option value="1">Ya</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label>Luas Terkena Hama (Ha)</label><br>
+                                                    <input type="number" step="any" name="hama" class="form-control">
+                                                </div>
+                                        </div>
                                     </div>
                                     <div class="m-portlet__foot m-portlet__foot--fit">
                                         <div class="m-form__actions">
@@ -143,18 +159,6 @@
                     digits: 2,
                     autoGroup: true,
                     prefix: 'Rp ', //Space after $, this will not truncate the first character.
-                    rightAlign: false,
-                    oncleared: function () { self.Value(''); }
-                });
-            </script>
-
-            <script type="text/javascript">
-                $('.good2').inputmask("numeric", {
-                    radixPoint: ".",
-                    groupSeparator: ",",
-                    digits: 2,
-                    autoGroup: true,
-                    suffix: ' Ton', //Space after $, this will not truncate the first character.
                     rightAlign: false,
                     oncleared: function () { self.Value(''); }
                 });

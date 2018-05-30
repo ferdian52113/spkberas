@@ -2,17 +2,29 @@
 if($this->input->post('is_submitted')){
     $harga      = $set_value('harga');
     $produksi   = $set_value('produksi');
+    $luastanam   = $set_value('luastanam');
+    $curahhujan   = $set_value('curahhujan');
+    $banjir   = $set_value('banjir');
+    $hama   = $set_value('hama');
 }
 else {
     if ($kategori=='Prediksi') {
     $id=$data->id_prediksi;
     $harga = $data->prediksi_harga;
     $produksi = $data->prediksi_produksi;
+    $luastanam = $data->prediksi_luastanam;
+    $curahhujan = $data->prediksi_curahhujan;
+    $banjir = $data->prediksi_banjir;
+    $hama = $data->prediksi_hama;
     }
     else {
         $id=$data->id_aktual;
         $harga = $data->aktual_harga;
         $produksi = $data->aktual_produksi;
+        $luastanam = $data->aktual_luastanam;
+        $curahhujan = $data->aktual_curahhujan;
+        $banjir = $data->aktual_banjir;
+        $hama = $data->aktual_hama;
     }
     $bulan = $data->bulan;
     $tahun = $data->tahun;
@@ -107,16 +119,38 @@ else {
                                                     </select>
                                                 </div>
                                         </div>
+                                        <hr>
                                         <div class="form-group m-form__group row">
-                                                <div class="col-md-6">
+                                                <div class="col-md-4">
                                                     <label>Harga (Rp)</label><br>
                                                     <input type="text" name="harga" class="form-control good" value="<?= $harga?>">
                                                 </div>
-                                                <div class="col-md-6">
+                                                <div class="col-md-4">
                                                     <label>Produksi (Ton)</label><br>
-                                                    <input type="text" name="produksi" class="form-control good2" value="<?= $produksi?>">
+                                                    <input type="number" step="any" name="produksi" class="form-control" value="<?= $produksi?>">
                                                 </div>
-                                            </div>
+                                                <div class="col-md-4">
+                                                    <label>Luas Tanam (Ha)</label><br>
+                                                    <input type="number" step="any" name="luastanam" class="form-control" value="<?= $luastanam?>">
+                                                </div>
+                                        </div>
+                                        <div class="form-group m-form__group row">
+                                                <div class="col-md-4">
+                                                    <label>Curah Hujan (mm)</label><br>
+                                                    <input type="number" step="any" name="curahhujan" class="form-control" value="<?= $curahhujan?>">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label>Terdapat Bencana Banjir</label><br>
+                                                    <select name="banjir" required="true" class="form-control m-input m-input--air">
+                                                        <option <?php if($banjir==0) echo " selected"; ?>value="0">Tidak</option>
+                                                        <option <?php if($banjir==1) echo " selected"; ?>value="1">Ya</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label>Luas Terkena Hama (Ha)</label><br>
+                                                    <input type="number" step="any" name="hama" class="form-control" value="<?= $hama?>">
+                                                </div>
+                                        </div>
                                     </div>
                                     <div class="m-portlet__foot m-portlet__foot--fit">
                                         <div class="m-form__actions">

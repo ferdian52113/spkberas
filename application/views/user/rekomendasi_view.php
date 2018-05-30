@@ -308,6 +308,7 @@
                                 print_r('luastanam4bulansebelum : '.$luastanam4bulansebelum.'<br>');
                                 print_r('produksi : '.$prod.'<br>');
                                 print_r('curahhujan : '.$curahhujan.'<br>');
+                                print_r('stabilitas_harga : '.$sta.'<br>');
                                 print_r('stabilitas_harga : '.$stabilitas_harga.'<br>');
                                 print_r('musim : '.$musim.'<br>');
                                 print_r('bencana : '.$bencana.'<br>');

@@ -32,7 +32,7 @@
                   <li class="m-nav__item">
                     <a href="" class="m-nav__link">
                       <span class="m-nav__link-text">
-                        Lihat Data
+                        Lihat Data Aktual dan Prediksi
                       </span>
                     </a>
                   </li>
@@ -99,7 +99,7 @@
                   </div>
             </div>
             <div class="row">
-              <div class="col-xl-6">
+              <div class="col-xl-12">
                     <div class="m-portlet m-portlet--mobile">
                       <div class="m-portlet__head">
                         <div class="m-portlet__head-caption">
@@ -116,10 +116,14 @@
                                           <thead>
                                               <tr>      
                                                   <th>No</th>  
-                                                  <th>Waktu</th>      
+                                                  <th>Waktu</th>  
+                                                  <th>Provinsi</th>    
                                                   <th>Harga</th>
                                                   <th>Produksi</th>
-                                                  <th>Provinsi</th>
+                                                  <th>Luas Tanam</th>
+                                                  <th>Curah Hujan</th>
+                                                  <th>Banjir</th>
+                                                  <th>Luas Terkena Hama</th>
                                                   <th>Aksi</th>                   
                                               </tr>      
                                           </thead>
@@ -135,9 +139,13 @@
                                                       <tr>      
                                                       <td><span><?php $no++; echo $no;?></span></td>
                                                       <td><span><?php echo $waktu; ?></span></td>
-                                                      <td><span><?php echo $data['aktual_harga'];?></span></td>      
-                                                      <td><span><?php echo $data['aktual_produksi'];?></span></td>
                                                       <td><span><?php echo $data['provinsi'];?></span></td>
+                                                      <td><span><?php echo "Rp. ".$data['aktual_harga'];?></span></td>      
+                                                      <td><span><?php echo $data['aktual_produksi']." Ton";?></span></td>
+                                                      <td><span><?php echo $data['aktual_luastanam']. " Ha";?></span></td>
+                                                      <td><span><?php echo $data['aktual_curahhujan']." mm";?></span></td>
+                                                      <td><span><?php if($data['aktual_banjir']>=1) {echo "Banjir";} else {echo "Tidak";};?></span></td>
+                                                      <td><span><?php echo $data['aktual_hama']. " Ha";?></span></td>
                                                       <td><a href="<?php echo base_url('user/editData/'.$kategori1.'/'.$data['id_aktual'])?>" class="m-btn m-btn--pill m-btn--hover-brand btn btn-sm btn-primary"/>
                                                       Edit
                                                       </td>                      
@@ -150,9 +158,12 @@
                                                           <tr>      
                                                           <td><span><?php $no++; echo $no;?></span></td>
                                                           <td><span><?php echo $waktu; ?></span></td>
-                                                          <td><span><?php echo $data['aktual_harga'];?></span></td>      
-                                                          <td><span><?php echo $data['aktual_produksi'];?></span></td>
-                                                          <td><span><?php echo $data['provinsi'];?></span></td>
+                                                          <td><span><?php echo "Rp. ".$data['aktual_harga'];?></span></td>      
+                                                          <td><span><?php echo $data['aktual_produksi']." Ton";?></span></td>
+                                                          <td><span><?php echo $data['aktual_luastanam']. " Ha";?></span></td>
+                                                          <td><span><?php echo $data['aktual_curahhujan']." mm";?></span></td>
+                                                          <td><span><?php if($data['aktual_banjir']>=1) {echo "Banjir";} else {echo "Tidak";};?></span></td>
+                                                          <td><span><?php echo $data['aktual_hama']. " Ha";?></span></td>
                                                           <td><a href="<?php echo base_url('user/editData/'.$kategori1.'/'.$data['id_aktual'])?>" class="m-btn m-btn--pill m-btn--hover-brand btn btn-sm btn-primary"/>
                                                           Edit
                                                           </td>                      
@@ -167,7 +178,7 @@
                             </div>
                         </div>
               </div>
-              <div class="col-xl-6">
+              <div class="col-xl-12">
                 <div class="m-portlet m-portlet--mobile">
                   <div class="m-portlet__head">
                     <div class="m-portlet__head-caption">
@@ -184,10 +195,14 @@
                                       <thead>
                                           <tr>      
                                               <th>No</th>  
-                                              <th>Waktu</th>      
+                                              <th>Waktu</th>  
+                                              <th>Provinsi</th>    
                                               <th>Harga</th>
                                               <th>Produksi</th>
-                                              <th>Provinsi</th>
+                                              <th>Luas Tanam</th>
+                                              <th>Curah Hujan</th>
+                                              <th>Banjir</th>
+                                              <th>Luas Terkena Hama</th>
                                               <th>Aksi</th>                   
                                           </tr>      
                                       </thead>
@@ -203,9 +218,13 @@
                                                     <tr>      
                                                     <td><span><?php $no++; echo $no;?></span></td>
                                                     <td><span><?php echo $waktu; ?></span></td>
-                                                    <td><span><?php echo $data['prediksi_harga'];?></span></td>      
-                                                    <td><span><?php echo $data['prediksi_produksi'];?></span></td>
                                                     <td><span><?php echo $data['provinsi'];?></span></td>
+                                                    <td><span><?php echo "Rp. ".$data['prediksi_harga'];?></span></td>      
+                                                    <td><span><?php echo $data['prediksi_produksi']." Ton";?></span></td>
+                                                    <td><span><?php echo $data['prediksi_luastanam']. " Ha";?></span></td>
+                                                    <td><span><?php echo $data['prediksi_curahhujan']." mm";?></span></td>
+                                                    <td><span><?php if($data['prediksi_banjir']>=1) {echo "Banjir";} else {echo "Tidak";};?></span></td>
+                                                    <td><span><?php echo $data['prediksi_hama']. " Ha";?></span></td>
                                                     <td><a href="<?php echo base_url('user/editData/'.$kategori2.'/'.$data['id_prediksi'])?>" class="m-btn m-btn--pill m-btn--hover-brand btn btn-sm btn-primary"/>
                                                     Edit
                                                     </td>                      
@@ -218,9 +237,12 @@
                                                     <tr>      
                                                     <td><span><?php $no++; echo $no;?></span></td>
                                                     <td><span><?php echo $waktu; ?></span></td>
-                                                    <td><span><?php echo $data['prediksi_harga'];?></span></td>      
-                                                    <td><span><?php echo $data['prediksi_produksi'];?></span></td>
-                                                    <td><span><?php echo $data['provinsi'];?></span></td>
+                                                    <td><span><?php echo "Rp. ".$data['prediksi_harga'];?></span></td>      
+                                                    <td><span><?php echo $data['prediksi_produksi']." Ton";?></span></td>
+                                                    <td><span><?php echo $data['prediksi_luastanam']. " Ha";?></span></td>
+                                                    <td><span><?php echo $data['prediksi_curahhujan']." mm";?></span></td>
+                                                    <td><span><?php if($data['prediksi_banjir']>=1) {echo "Banjir";} else {echo "Tidak";};?></span></td>
+                                                    <td><span><?php echo $data['prediksi_hama']. " Ha";?></span></td>
                                                     <td><a href="<?php echo base_url('user/editData/'.$kategori2.'/'.$data['id_prediksi'])?>" class="m-btn m-btn--pill m-btn--hover-brand btn btn-sm btn-primary"/>
                                                     Edit
                                                     </td>                      

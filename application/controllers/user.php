@@ -277,20 +277,25 @@ class User extends CI_Controller {
 
     public function inputData(){
         $data['halaman'] = 'Entri Data';
-        $this->form_validation->set_rules('kategori','kategori', 'required');
+        $this->form_validation->set_rules('prov','Provinsi', 'required');
+        $this->form_validation->set_rules('tahun','Tahun', 'required');
+        $this->form_validation->set_rules('bulan','Bulan', 'required');
 
         if ($this->form_validation->run() == FALSE){
             $data['provinsi']=$this->user_model->get_provinsi();
             $data['bulan']=$this->user_model->get_bulan();
             $this->load->view('user/inputdata_view',$data);
         }
-        else {
-            $kategori = $this->input->post('kategori');     
+        else {  
             $provinsi = $this->input->post('prov'); 
             $tahun = $this->input->post('tahun');
             $bulan = $this->input->post('bulan');       
             $harga = $this->clean($this->input->post('harga'));       
-            $produksi = $this->clean($this->input->post('produksi'));
+            $produksi = $this->input->post('produksi');
+            $luastanam = $this->input->post('luastanam');
+            $curah_hujan = $this->input->post('curahhujan');
+            $banjir = $this->input->post('banjir');
+            $hama = $this->input->post('hama');
 
             $bln = $this->user_model->ubah_bulan($bulan);
             $waktu = $tahun.'-'.$bln.'-'.'01';
@@ -302,6 +307,8 @@ class User extends CI_Controller {
 
             //cek apakah sudah ada dimensi waktu
             $cek_dimensi_waktu = $this->user_model->cek($bulanangka,$tahun);
+
+            //cek sudah ada input atau belum
             $cek_waktu_aktual = $this->user_model->cek_waktu_aktual($bulanangka,$tahun,$prov);
             $cek_waktu_prediksi = $this->user_model->cek_waktu_prediksi($bulanangka,$tahun,$prov);
             if (!$cek_dimensi_waktu) {
@@ -314,109 +321,23 @@ class User extends CI_Controller {
                     $this->user_model->insertData('waktu',$dimensi_waktu);
                 }
 
-            //insert data untuk masing-masing kategori
-            if ($kategori=='Prediksi') {
-                if ($cek_waktu_prediksi['prediksi_harga'] && $cek_waktu_prediksi['prediksi_produksi']) {
-                    $this->session->set_flashdata('msg', '<div class="alert animated fadeInRight alert-danger">Anda sudah memasukkan data pada bulan ini. Silahkan masuk ke menu <b>Lihat Data</b> untuk melakukan perubahan.</div>');
-                        redirect('User/inputData');
-                } else if ($cek_waktu_prediksi['prediksi_harga'] && !$cek_waktu_prediksi['prediksi_produksi']) {
-                    $id=$cek_waktu_prediksi['id_prediksi'];
-                    if($harga > 0 && $produksi > 0){
-                        $data_prediksi = array(     
-                            'prediksi_harga'  => $harga,
-                            'prediksi_produksi'  => $produksi
-                        );
-                    }else if ($harga > 0) {
-                        $data_prediksi = array(     
-                            'prediksi_harga'  => $harga
-                        );
-                    } else if ($produksi > 0){
-                        $data_prediksi = array(
-                            'prediksi_produksi'  => $produksi
-                        );
-                    }
-                    $this->user_model->updateData('id_prediksi', $id, 'beras_prediksi', $data_prediksi);
-                } else if ($cek_waktu_prediksi['prediksi_produksi'] && !$cek_waktu_prediksi['prediksi_harga']) {
-                    $id=$cek_waktu_prediksi['id_prediksi'];
-                    if($harga > 0 && $produksi > 0){
-                        $data_prediksi = array(     
-                            'prediksi_harga'  => $harga,
-                            'prediksi_produksi'  => $produksi
-                        );
-                    }else if ($harga > 0) {
-                        $data_prediksi = array(     
-                            'prediksi_harga'  => $harga
-                        );
-                    } else if ($produksi > 0){
-                        $data_prediksi = array(
-                            'prediksi_produksi'  => $produksi
-                        );
-                    } 
-                    $this->user_model->updateData('id_prediksi', $id, 'beras_prediksi', $data_prediksi);
-                } else {
-                    $data_prediksi = array(                
-                        'id_waktu'  => $date,
-                        'id_provinsi'  => $prov,
-                        'prediksi_harga'  => $harga,
-                        'prediksi_produksi'  => $produksi
-                    );
-                    $this->user_model->insertData('beras_prediksi',$data_prediksi);
-                }
-            }
-            else if ($kategori=='Aktual') {
-                if ($cek_waktu_aktual['aktual_harga'] && $cek_waktu_aktual['aktual_produksi']) {
-                    $this->session->set_flashdata('msg', '<div class="alert animated fadeInRight alert-danger">Anda sudah memasukkan data pada bulan ini. Silahkan masuk ke menu <b>Lihat Data</b> untuk melakukan perubahan.</div>');
-                        redirect('User/inputData');
-                } else if ($cek_waktu_aktual['aktual_harga'] && !$cek_waktu_aktual['aktual_produksi']) {
-                    $id=$cek_waktu_aktual['id_aktual'];
-                    if ($harga > 0 && $produksi > 0){
-                        $data_aktual = array(     
-                            'aktual_harga'  => $harga,
-                            'aktual_produksi'  => $produksi
-                        );
-                    }else if ($harga > 0) {
-                        $data_aktual = array(     
-                            'aktual_harga'  => $harga
-                        );
-                    } else if ($produksi > 0){
-                        $data_aktual = array(
-                            'aktual_produksi'  => $produksi
-                        );
-                    } 
-                    $this->user_model->updateData('id_aktual', $id, 'beras_aktual', $data_aktual);
-                    $this->forecast($date,$prov,$produksi);
-                } else if ($cek_waktu_aktual['aktual_produksi'] && !$cek_waktu_aktual['aktual_harga']) {
-                    $id=$cek_waktu_aktual['id_aktual'];
-                    if ($harga > 0 && $produksi > 0){
-                        $data_aktual = array(     
-                            'aktual_harga'  => $harga,
-                            'aktual_produksi'  => $produksi
-                        );
-                    } else if ($harga > 0) {
-                        $data_aktual = array(     
-                            'aktual_harga'  => $harga
-                        );
-                    } else if ($produksi > 0){
-                        $data_aktual = array(
-                            'aktual_produksi'  => $produksi
-                        );
-                    } 
-                    $this->user_model->updateData('id_aktual', $id, 'beras_aktual', $data_aktual);
-                    $this->forecast($date,$prov,$produksi);
-                } else {
-                    $data_aktual = array(                
-                        'id_waktu'  => $date,
-                        'id_provinsi'  => $prov,
-                        'aktual_harga'  => $harga,
-                        'aktual_produksi'  => $produksi
-                    );
-                    $this->user_model->insertData('beras_aktual',$data_aktual);
-
-                    if($produksi){
-                        $this->forecast($date,$prov,$produksi);
-                    }
-                }      
-            }
+            //insert data
+            if ($cek_waktu_aktual) {
+                $this->session->set_flashdata('msg', '<div class="alert animated fadeInRight alert-danger">Anda sudah memasukkan data pada bulan ini. Silahkan masuk ke menu <b>Lihat Data</b> untuk melakukan perubahan.</div>');
+                    redirect('User/inputData');
+            } else {
+                $data_aktual = array(                
+                    'id_waktu'  => $date,
+                    'id_provinsi'  => $prov,
+                    'aktual_harga'  => $harga,
+                    'aktual_produksi'  => $produksi,
+                    'aktual_luastanam' => $luastanam,
+                    'aktual_curahhujan' => $curah_hujan,
+                    'aktual_banjir' => $banjir,
+                    'aktual_hama' => $hama
+                );
+                $this->user_model->insertData('beras_aktual',$data_aktual);
+            }      
             $message = "Data berhasil disimpan.";
             echo "<script type='text/javascript'>alert('$message');
             window.location.href='".base_url("user/lihatData")."';</script>";
@@ -959,65 +880,81 @@ class User extends CI_Controller {
                 $data['provinsi_pilih'] = $provinsi;
 
                 //reverse bulan dan prov menjadi angka
-                $tahun=2017;
+                //$tahun=2016;
                 $prov = $this->user_model->ubah_provinsi($provinsi);
 
-                if($prov==01) {
-                    $alpha_luas = 0.0788369192876066; $beta_luas = 0; $gamma_luas = 0.586779366461092;
-                    $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
-                    $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
-                    $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
-                } else if($prov==02) {
-                    $alpha_luas = 0; $beta_luas = 0; $gamma_luas = 0;
-                    $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
-                    $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
-                    $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
-                } else if($prov==03) {
-                    $alpha_luas = 0; $beta_luas = 0; $gamma_luas = 0;
-                    $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
-                    $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
-                    $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
-                } else if($prov==04) {
-                    $alpha_luas = 0; $beta_luas = 0; $gamma_luas = 0;
-                    $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
-                    $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
-                    $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
-                } else if($prov==05) {
-                    $alpha_luas = 0; $beta_luas = 0; $gamma_luas = 0;
-                    $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
-                    $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
-                    $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
-                } else if($prov==06) {
-                    $alpha_luas = 0; $beta_luas = 0; $gamma_luas = 0;
-                    $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
-                    $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
-                    $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
-                } else if($prov==07) {
-                    $alpha_luas = 0; $beta_luas = 0; $gamma_luas = 0;
-                    $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
-                    $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
-                    $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
-                } else if($prov==08) {
-                    $alpha_luas = 0; $beta_luas = 0; $gamma_luas = 0;
-                    $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
-                    $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
-                    $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
-                } else if($prov==09) {
-                    $alpha_luas = 0; $beta_luas = 0; $gamma_luas = 0;
-                    $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
-                    $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
-                    $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
-                } else if($prov==10) {
-                    $alpha_luas = 0; $beta_luas = 0; $gamma_luas = 0;
-                    $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
-                    $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
-                    $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
-                } else if($prov==11) {
-                    $alpha_luas = 0; $beta_luas = 0; $gamma_luas = 0;
-                    $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
-                    $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
-                    $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
-                }
+                $tanggal_pilih = $tahun.'-'.'01'.'-01'; 
+                $tanggal_pilih_tahun_sebelumnya = ($tahun-1).'-'.'01'.'-01'; 
+                $cek_data_prediksi = $this->user_model->cek_prediksi($tanggal_pilih,$prov);
+                $cek_data_prediksi_tahun_sebelumnya = $this->user_model->cek_prediksi($tanggal_pilih_tahun_sebelumnya,$prov);
+
+                
+
+                if ($cek_data_prediksi) {
+                    $this->session->set_flashdata('msg2', '<div class="alert animated fadeInRight alert-danger">Anda sudah melakukan forecast pada tahun ini.</div>');
+                } else if (!$cek_data_prediksi && !$cek_data_prediksi_tahun_sebelumnya) {
+                    $this->session->set_flashdata('msg2', '<div class="alert animated fadeInRight alert-danger">Pastikan tahun sebelumnya sudah terforecast.</div>');
+                } else {
+
+                    if($prov==01) {
+                        $alpha_luas = 0.078836919; $beta_luas = 0; $gamma_luas = 0.586779366;
+                        $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
+                        $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
+                        $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
+                    } else if($prov==02) {
+                        $alpha_luas = 0; $beta_luas = 0; $gamma_luas = 0;
+                        $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
+                        $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
+                        $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
+                    } else if($prov==03) {
+                        $alpha_luas = 0; $beta_luas = 0; $gamma_luas = 0;
+                        $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
+                        $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
+                        $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
+                    } else if($prov==04) {
+                        $alpha_luas = 0; $beta_luas = 0; $gamma_luas = 0;
+                        $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
+                        $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
+                        $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
+                    } else if($prov==05) {
+                        $alpha_luas = 0; $beta_luas = 0; $gamma_luas = 0;
+                        $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
+                        $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
+                        $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
+                    } else if($prov==06) {
+                        $alpha_luas = 0; $beta_luas = 0; $gamma_luas = 0;
+                        $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
+                        $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
+                        $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
+                    } else if($prov==07) {
+                        $alpha_luas = 0; $beta_luas = 0; $gamma_luas = 0;
+                        $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
+                        $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
+                        $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
+                    } else if($prov==08) {
+                        $alpha_luas = 0; $beta_luas = 0; $gamma_luas = 0;
+                        $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
+                        $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
+                        $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
+                    } else if($prov==09) {
+                        $alpha_luas = 0; $beta_luas = 0; $gamma_luas = 0;
+                        $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
+                        $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
+                        $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
+                    } else if($prov==10) {
+                        $alpha_luas = 0; $beta_luas = 0; $gamma_luas = 0;
+                        $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
+                        $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
+                        $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
+                    } else if($prov==11) {
+                        $alpha_luas = 0; $beta_luas = 0; $gamma_luas = 0;
+                        $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
+                        $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
+                        $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
+                    }
+                
+                //$this->holtWinterBuWiwik($tahun,$season_length = 6, $alpha_luas, $beta_luas, $gamma_luas,$loc=$prov);
+
 
                 $this->forecastLuasTanam($tahun,$season_length = 12, $alpha_luas, $beta_luas, $gamma_luas,$loc=$prov);
                 $this->forecastProduksi($tahun,$prov);
@@ -1026,11 +963,11 @@ class User extends CI_Controller {
                 $this->forecastBencana($season_length = 12, $alpha_bencana, $beta_bencana, $gamma_bencana,$loc=$prov);
                 $this->forecastHama($season_length = 12, $alpha_hama, $beta_hama, $gamma_hama,$loc=$prov);*/
                 
+                }
                 
-                exit();
                 //$cek_data_aktual = $this->user_model->cek_waktu_aktual($bulan,$tahun,$prov);
                 //$cek_data_prediksi = $this->user_model->cek_waktu_prediksi($bulan,$tahun,$prov);
-                
+               
             }
             $this->load->view('user/forecast_view',$data);
         }
@@ -1038,144 +975,6 @@ class User extends CI_Controller {
         
     }
 
-    function forecastProduksi($tahun,$prov){
-        for ($i=1; $i <= 12 ; $i++) { 
-            $a=0;
-
-            $tanggal = $tahun.'-'.$i.'-01';
-            $date_now = date("Y-m-d",strtotime($tanggal));
-            $date_4_month_ago = date("Y-m-d",strtotime("-4 months",strtotime($date_now)));
-
-            //Mengecek apakah menggunakan data aktual atau prediksi
-            $cek_data_aktual = $this->user_model->cek_aktual($date_4_month_ago,$prov);
-            $cek_data_prediksi = $this->user_model->cek_prediksi($date_4_month_ago,$prov);    
-
-            if ($cek_data_aktual && $cek_data_prediksi) {
-                $data['data_olah'] = $this->user_model->get_aktual_pilih($date_4_month_ago,$prov);
-                $luas_4_bulan_lalu=$data['data_olah'][0]['aktual_luastanam'];
-            }
-            else if($cek_data_prediksi) {
-                $data['data_olah'] = $this->user_model->get_prediksi_pilih($date_4_month_ago,$prov);
-                $luas_4_bulan_lalu=$data['data_olah'][0]['prediksi_luastanam'];
-            }
-            else if($cek_data_aktual) {
-                $data['data_olah'] = $this->user_model->get_aktual_pilih($date_4_month_ago,$prov);
-                $luas_4_bulan_lalu=$data['data_olah'][0]['aktual_luastanam'];
-            }
-
-            //Memilih fungsi berdasarkan provinsi
-            if($prov==01) {
-                $prediksi_produksi = -116100 + 6.505*$luas_4_bulan_lalu;
-            } else if($prov==02) {
-                $prediksi_produksi = -109800 + 6.164*$luas_4_bulan_lalu;
-            } else if($prov==03) {
-                $prediksi_produksi = -27830 + 5.505*$luas_4_bulan_lalu;
-            } else if($prov==04) {
-                $prediksi_produksi = 110700 + 3.039*$luas_4_bulan_lalu;
-            } else if($prov==05) {
-                $prediksi_produksi = 18510 + 4.062*$luas_4_bulan_lalu;
-            } else if($prov==06) {
-                $prediksi_produksi = -1381.1742 + 5.6747*$luas_4_bulan_lalu;
-            } else if($prov==07) {
-                $prediksi_produksi = 40120 + 3.046*$luas_4_bulan_lalu;
-            } else if($prov==08) {
-                $prediksi_produksi = 1436.7493 + 3.1679*$luas_4_bulan_lalu;
-            } else if($prov==09) {
-                $prediksi_produksi = 8034.3292 + 2.4666*$luas_4_bulan_lalu;
-            } else if($prov==10) {
-                $prediksi_produksi = 389.0367 + 3.8527*$luas_4_bulan_lalu;
-            } else if($prov==11) {
-                $prediksi_produksi = 31200 + 6.505*$luas_4_bulan_lalu;
-            }
-            $data_prediksi = array(                
-                        'id_waktu'  => $date_now,
-                        'prediksi_produksi'  => round($prediksi_produksi)          
-            );
-            print_r($data_prediksi); echo "<br>";
-            $a++;
-        }
-    }
-
-    function forecastHarga($tahun,$prov){
-        for ($i=1; $i <= 12 ; $i++) { 
-            $a=0;
-
-            $tanggal = $tahun.'-'.$i.'-01';
-            $date_now = date("Y-m-d",strtotime($tanggal));
-            $date_1_month_ago = date("Y-m-d",strtotime("-1 months",strtotime($date_now)));
-
-            //Mengecek apakah menggunakan data aktual atau prediksi
-            $cek_data_aktual_bulan_lalu = $this->user_model->cek_aktual($date_1_month_ago,$prov);
-            $cek_data_prediksi_bulan_lalu = $this->user_model->cek_prediksi($date_1_month_ago,$prov);   
-            $cek_data_aktual = $this->user_model->cek_aktual($date_now,$prov);
-            $cek_data_prediksi = $this->user_model->cek_prediksi($date_now,$prov);    
-            /*print_r($cek_data_aktual_bulan_lalu);
-            echo "<br>";
-            print_r($cek_data_prediksi_bulan_lalu);
-            echo "<br>";
-            print_r($cek_data_aktual);
-            echo "<br>";
-            print_r($cek_data_prediksi);
-            echo "<br>";*/
-            if ($cek_data_aktual_bulan_lalu && $cek_data_prediksi_bulan_lalu) {
-                $data['data_bulan_lalu'] = $this->user_model->get_aktual_pilih($date_1_month_ago,$prov);
-                $harga_bulan_lalu=$data['data_bulan_lalu'][0]['aktual_harga'];
-            }
-            else if($cek_data_prediksi_bulan_lalu) {
-                $data['data_bulan_lalu'] = $this->user_model->get_prediksi_pilih($date_1_month_ago,$prov);
-                $harga_bulan_lalu=$data['data_bulan_lalu'][0]['prediksi_harga'];
-            }
-            else if($cek_data_aktual_bulan_lalu) {
-                $data['data_bulan_lalu'] = $this->user_model->get_aktual_pilih($date_1_month_ago,$prov);
-                $harga_bulan_lalu=$data['data_bulan_lalu'][0]['aktual_harga'];
-            }
-
-            if ($cek_data_aktual && $cek_data_prediksi) {
-                $data['data_bulan_ini'] = $this->user_model->get_aktual_pilih($date_now,$prov);
-                $produksi_bulan_ini=$data['data_bulan_ini'][0]['aktual_produksi'];
-            }
-            else if($cek_data_prediksi) {
-                $data['data_bulan_ini'] = $this->user_model->get_prediksi_pilih($date_now,$prov);
-                $produksi_bulan_ini=$data['data_bulan_ini'][0]['prediksi_produksi'];
-            }
-            else if($cek_data_aktual) {
-                $data['data_bulan_ini'] = $this->user_model->get_aktual_pilih($date_now,$prov);
-                $produksi_bulan_ini=$data['data_bulan_ini'][0]['aktual_produksi'];
-            }
-
-            //Memilih fungsi berdasarkan provinsi
-            if($prov==01) {
-                $prediksi_harga = 177.1 + 0.9966*$harga_bulan_lalu - 0.000128*$produksi_bulan_ini;
-            } else if($prov==02) {
-                $prediksi_harga = 186.3 + 0.9951*$harga_bulan_lalu- 0.0001349*$produksi_bulan_ini;
-            } else if($prov==03) {
-                $prediksi_harga = 94.98 + 1.003*$harga_bulan_lalu-0.00007929*$produksi_bulan_ini;
-            } else if($prov==04) {
-                $prediksi_harga = 103.5 + 0.9968*$harga_bulan_lalu- 0.0001121*$produksi_bulan_ini;
-            } else if($prov==05) {
-                $prediksi_harga = 146.8 + 0.9939*$harga_bulan_lalu - 0.0002551*$produksi_bulan_ini;
-            } else if($prov==06) {
-                $prediksi_harga = 103.2 + 0.994*$harga_bulan_lalu -0.00008089*$produksi_bulan_ini;
-            } else if($prov==07) {
-                $prediksi_harga = 173.2 + 0.9874*$harga_bulan_lalu - 0.0002333*$produksi_bulan_ini;
-            } else if($prov==08) {
-                $prediksi_harga = -192 + 1.035*$harga_bulan_lalu - 0.002558*$produksi_bulan_ini;
-            } else if($prov==09) {
-                $prediksi_harga = 164.4 + 0.9869*$harga_bulan_lalu - 0.000325*$produksi_bulan_ini;
-            } else if($prov==10) {
-                $prediksi_harga = -25.698886 + 1.013305*$harga_bulan_lalu- 0.002035*$produksi_bulan_ini;
-            } else if($prov==11) {
-                $prediksi_harga = 200.5 + 0.9794*$harga_bulan_lalu - 0.0004304*$produksi_bulan_ini;
-            }
-
-            $data_prediksi = array(                
-                        'id_waktu'  => $date_now,
-                        'prediksi_harga'  => round($prediksi_harga)          
-            );
-            print_r($data_prediksi); echo "<br>";
-            $a++;
-        }
-    }
 
     function forecastLuasTanam($tahun,$season_length, $alpha, $beta, $gamma,$loc) {
     $data = array (194599,76497,121151,260823,222666,125537,61885,78181,50220,123550,282295,340623,148100,91611,166660,259635,185047,117545,96525,89635,42683,92042,257353,329541,206084,113830,141104,229219,235581,134658,136069,94785,105647,178140,258919,279910,176936,130045,134839,189167,212180,161052,115853,60388,65371,56844,222749,382951,222048,105671,102665,226562,254944,135609,110371,68651,60463,81077,240507,363323,216940,112426,112955,225483,247383,143133,132867,102240,65581,81148,183321,364507,245689,120827,124884,196627,218754,195425,129256,105910,73512,66793,176480,326378,278742,119919,100666,194599,247756,152509,94717,84967,69417,41005,87356,348383,121226,101740,191464,245142,152457,93894,83590,68699,34712,79631,348189,129427);
@@ -1282,21 +1081,260 @@ class User extends CI_Controller {
         }
     //print_r($regression);
         $a=1;
-        $k = count($regression)-$season_length;
+        $k = count($regression)-12;
+        for ($i=1; $i <= 12; $i++) { 
+                $tanggal = $tahun.'-'.$a.'-01';
+                $date_now = date("Y-m-d",strtotime($tanggal));
+                $bulan = $this->user_model->trans_bulan($a);
+
+                //cek apakah sudah ada dimensi waktu
+                $cek_dimensi_waktu = $this->user_model->cek($i,$tahun);
+                if (!$cek_dimensi_waktu) {
+                        $dimensi_waktu = array(                
+                            'id_waktu'  => $tanggal,
+                            'bulan'  => $bulan,
+                            'tahun'  => $tahun,                
+                        );
+                        //print_r($dimensi_waktu);echo "<br>";
+                        $this->user_model->insertData('waktu',$dimensi_waktu);
+                    }
+
+                $data_prediksi = array(                
+                            'id_waktu'  => $date_now,
+                            'id_provinsi' => $loc,
+                            'prediksi_luastanam'  => round($regression[$k])          
+                );
+                //print_r($data_prediksi); echo "<br>";
+                $this->user_model->insertData('beras_prediksi2',$data_prediksi);
+                $a++;$k++;
+
+        }
+    }
+
+    function forecastProduksi($tahun,$prov){
+        for ($i=1; $i <= 12 ; $i++) { 
+            $a=0;
+
+            $tanggal = $tahun.'-'.$i.'-01';
+            $date_now = date("Y-m-d",strtotime($tanggal));
+            $date_4_month_ago = date("Y-m-d",strtotime("-4 months",strtotime($date_now)));
+
+            //Mengecek apakah menggunakan data aktual atau prediksi
+            $cek_data_aktual = $this->user_model->cek_aktual($date_4_month_ago,$prov);
+            $cek_data_prediksi = $this->user_model->cek_prediksi($date_4_month_ago,$prov);    
+
+            if ($cek_data_aktual && $cek_data_prediksi) {
+                $data['data_olah'] = $this->user_model->get_aktual_pilih($date_4_month_ago,$prov);
+                $luas_4_bulan_lalu=$data['data_olah'][0]['aktual_luastanam'];
+            }
+            else if($cek_data_prediksi) {
+                $data['data_olah'] = $this->user_model->get_prediksi_pilih($date_4_month_ago,$prov);
+                $luas_4_bulan_lalu=$data['data_olah'][0]['prediksi_luastanam'];
+            }
+            else if($cek_data_aktual) {
+                $data['data_olah'] = $this->user_model->get_aktual_pilih($date_4_month_ago,$prov);
+                $luas_4_bulan_lalu=$data['data_olah'][0]['aktual_luastanam'];
+            }
+
+            //Memilih fungsi berdasarkan provinsi
+            if($prov==01) {
+                $prediksi_produksi = -116100 + 6.505*$luas_4_bulan_lalu;
+            } else if($prov==02) {
+                $prediksi_produksi = -109800 + 6.164*$luas_4_bulan_lalu;
+            } else if($prov==03) {
+                $prediksi_produksi = -27830 + 5.505*$luas_4_bulan_lalu;
+            } else if($prov==04) {
+                $prediksi_produksi = 110700 + 3.039*$luas_4_bulan_lalu;
+            } else if($prov==05) {
+                $prediksi_produksi = 18510 + 4.062*$luas_4_bulan_lalu;
+            } else if($prov==06) {
+                $prediksi_produksi = -1381.1742 + 5.6747*$luas_4_bulan_lalu;
+            } else if($prov==07) {
+                $prediksi_produksi = 40120 + 3.046*$luas_4_bulan_lalu;
+            } else if($prov==08) {
+                $prediksi_produksi = 1436.7493 + 3.1679*$luas_4_bulan_lalu;
+            } else if($prov==09) {
+                $prediksi_produksi = 8034.3292 + 2.4666*$luas_4_bulan_lalu;
+            } else if($prov==10) {
+                $prediksi_produksi = 389.0367 + 3.8527*$luas_4_bulan_lalu;
+            } else if($prov==11) {
+                $prediksi_produksi = 31200 + 6.505*$luas_4_bulan_lalu;
+            }
+            $data_prediksi = array(                
+                        'id_waktu'  => $date_now,
+                        'prediksi_produksi'  => round($prediksi_produksi)          
+            );
+            //print_r($data_prediksi); echo "<br>";
+            $this->user_model->updateData('id_waktu', $date_now, 'beras_prediksi2', $data_prediksi);
+            $a++;
+        }
+    }
+
+    function forecastHarga($tahun,$prov){
+        for ($i=1; $i <= 12 ; $i++) { 
+            $a=0;
+
+            $tanggal = $tahun.'-'.$i.'-01';
+            $date_now = date("Y-m-d",strtotime($tanggal));
+            $date_1_month_ago = date("Y-m-d",strtotime("-1 months",strtotime($date_now)));
+
+            //Mengecek apakah menggunakan data aktual atau prediksi
+            $cek_data_aktual_bulan_lalu = $this->user_model->cek_aktual($date_1_month_ago,$prov);
+            $cek_data_prediksi_bulan_lalu = $this->user_model->cek_prediksi($date_1_month_ago,$prov);   
+            $cek_data_aktual = $this->user_model->cek_aktual($date_now,$prov);
+            $cek_data_prediksi = $this->user_model->cek_prediksi($date_now,$prov);    
+            /*print_r($cek_data_aktual_bulan_lalu);
+            echo "<br>";
+            print_r($cek_data_prediksi_bulan_lalu);
+            echo "<br>";
+            print_r($cek_data_aktual);
+            echo "<br>";
+            print_r($cek_data_prediksi);
+            echo "<br>";*/
+            if ($cek_data_aktual_bulan_lalu && $cek_data_prediksi_bulan_lalu) {
+                $data['data_bulan_lalu'] = $this->user_model->get_aktual_pilih($date_1_month_ago,$prov);
+                $harga_bulan_lalu=$data['data_bulan_lalu'][0]['aktual_harga'];
+            }
+            else if($cek_data_prediksi_bulan_lalu) {
+                $data['data_bulan_lalu'] = $this->user_model->get_prediksi_pilih($date_1_month_ago,$prov);
+                $harga_bulan_lalu=$data['data_bulan_lalu'][0]['prediksi_harga'];
+            }
+            else if($cek_data_aktual_bulan_lalu) {
+                $data['data_bulan_lalu'] = $this->user_model->get_aktual_pilih($date_1_month_ago,$prov);
+                $harga_bulan_lalu=$data['data_bulan_lalu'][0]['aktual_harga'];
+            }
+
+            if ($cek_data_aktual && $cek_data_prediksi) {
+                $data['data_bulan_ini'] = $this->user_model->get_aktual_pilih($date_now,$prov);
+                $produksi_bulan_ini=$data['data_bulan_ini'][0]['aktual_produksi'];
+            }
+            else if($cek_data_prediksi) {
+                $data['data_bulan_ini'] = $this->user_model->get_prediksi_pilih($date_now,$prov);
+                $produksi_bulan_ini=$data['data_bulan_ini'][0]['prediksi_produksi'];
+            }
+            else if($cek_data_aktual) {
+                $data['data_bulan_ini'] = $this->user_model->get_aktual_pilih($date_now,$prov);
+                $produksi_bulan_ini=$data['data_bulan_ini'][0]['aktual_produksi'];
+            }
+
+            //Memilih fungsi berdasarkan provinsi
+            if($prov==01) {
+                $prediksi_harga = 177.1 + 0.9966*$harga_bulan_lalu - 0.000128*$produksi_bulan_ini;
+            } else if($prov==02) {
+                $prediksi_harga = 186.3 + 0.9951*$harga_bulan_lalu- 0.0001349*$produksi_bulan_ini;
+            } else if($prov==03) {
+                $prediksi_harga = 94.98 + 1.003*$harga_bulan_lalu-0.00007929*$produksi_bulan_ini;
+            } else if($prov==04) {
+                $prediksi_harga = 103.5 + 0.9968*$harga_bulan_lalu- 0.0001121*$produksi_bulan_ini;
+            } else if($prov==05) {
+                $prediksi_harga = 146.8 + 0.9939*$harga_bulan_lalu - 0.0002551*$produksi_bulan_ini;
+            } else if($prov==06) {
+                $prediksi_harga = 103.2 + 0.994*$harga_bulan_lalu -0.00008089*$produksi_bulan_ini;
+            } else if($prov==07) {
+                $prediksi_harga = 173.2 + 0.9874*$harga_bulan_lalu - 0.0002333*$produksi_bulan_ini;
+            } else if($prov==08) {
+                $prediksi_harga = -192 + 1.035*$harga_bulan_lalu - 0.002558*$produksi_bulan_ini;
+            } else if($prov==09) {
+                $prediksi_harga = 164.4 + 0.9869*$harga_bulan_lalu - 0.000325*$produksi_bulan_ini;
+            } else if($prov==10) {
+                $prediksi_harga = -25.698886 + 1.013305*$harga_bulan_lalu- 0.002035*$produksi_bulan_ini;
+            } else if($prov==11) {
+                $prediksi_harga = 200.5 + 0.9794*$harga_bulan_lalu - 0.0004304*$produksi_bulan_ini;
+            }
+
+            $data_prediksi = array(                
+                        'id_waktu'  => $date_now,
+                        'prediksi_harga'  => round($prediksi_harga)          
+            );
+
+            //print_r($data_prediksi); echo "<br>";
+            $this->user_model->updateData('id_waktu', $date_now, 'beras_prediksi2', $data_prediksi);
+            $a++;
+        }
+    }
+
+    
+
+    function holtWinterBuWiwik($tahun,$season_length, $alpha, $beta, $gamma,$loc) {
+    $data = array (194599,76497,121151,260823,222666,125537,61885,78181,50220,123550,282295,340623,148100,91611,166660,259635,185047,117545,96525,89635,42683,92042,257353,329541,206084,113830,141104,229219,235581,134658,136069,94785,105647,178140,258919,279910,176936,130045,134839,189167,212180,161052,115853,60388,65371,56844,222749,382951,222048,105671,102665,226562,254944,135609,110371,68651,60463,81077,240507,363323,216940,112426,112955,225483,247383,143133,132867,102240,65581,81148,183321,364507,245689,120827,124884,196627,218754,195425,129256,105910,73512,66793,176480,326378,278742,119919,100666,194599,247756,152509,94717,84967,69417,41005,87356,348383,121226,101740,191464,245142,152457,93894,83590,68699,34712,79631,348189,129427);
+    
+    $tahun_akhir_forecast=2016;
+    $length_forecast = ($tahun-$tahun_akhir_forecast)*12;
+    // Menghitung initial level
+    $initial_level = 0;
+        for($i = 0; $i < $season_length; $i++) {
+            $initial_level += $data[$i];
+        }
+    $initial_level /= $season_length;  
+
+    //Menghitung initial trend
+    $trend1 = 0;
+        for($i = 0; $i < $season_length; $i++) {
+            $trend1 += $data[$i];
+        }
+    $trend1 /= $season_length;
+    
+    $trend2 = 0;
+        for($i = $season_length; $i < 2*$season_length; $i++) {
+            $trend2 += $data[$i];
+        }
+    $trend2 /= $season_length;
+
+    $initial_trend = ($trend2 - $trend1) / $season_length;
+    
+    // Menghitung initial season
+    $season = array_fill(0, count($data), 0);
+        for($i = 0; $i < $season_length; $i++) {
+            $season[$i] = $data[$i] / $initial_level;
+        }
+    
+    $holt_winters = array_fill(0, count($data)+$length_forecast, 0);
+    $regression = array_fill(0, count($data)+$length_forecast, 0);
+    $level = $initial_level;
+    $trend = $initial_trend;
+
+    //print_r($season);print_r($trend);exit();
+    $m=1;
+        for($i=0;$i<count($data)+$length_forecast;$i++){
+            if($i<$season_length) {
+
+            } else if ($i>=count($data)){
+                $temp_level = $level;
+                $temp_trend = $trend;
+                $temp_data=$holt_winters[$i-12];
+                $level = ($alpha * ($temp_data/$season[$i-$season_length])) + ((1.0 - $alpha) * ($temp_level + $temp_trend));
+                $trend = $beta * ($level - $temp_level) + ((1.0 - $beta) * $temp_trend);
+                $season[$i] = $gamma * ($temp_data/$level) + (1.0 - $gamma) * $season[$i-$season_length];
+                $holt_winters[$i] = ($level + $trend) * $season[$i-$season_length];
+                echo ($i+1)." : ".$level."===".$trend."===".$season[$i]."===".$holt_winters[$i]."<br>";
+                $m++;
+            } else {
+                $temp_level = $level;
+                $temp_trend = $trend;
+                $level = ($alpha * ($data[$i]/$season[$i-$season_length])) + ((1.0 - $alpha) * ($temp_level + $temp_trend));
+                $trend = $beta * ($level - $temp_level) + ((1.0 - $beta) * $temp_trend);
+                $season[$i] = $gamma * ($data[$i]/$level) + (1.0 - $gamma) * $season[$i-$season_length];
+                $holt_winters[$i] = ($level + $trend) * $season[$i-$season_length];
+                echo ($i+1)." : ".$level."===".$trend."===".$season[$i]."===".$holt_winters[$i]."<br>";
+            }
+        }
+    //print_r($regression);
+        $a=1;
+        $k = count($holt_winters)-12;
         for ($i=1; $i <= 12; $i++) { 
                 $tanggal = $tahun.'-'.$a.'-01';
                 $date_now = date("Y-m-d",strtotime($tanggal));
 
                 $data_prediksi = array(                
                             'id_waktu'  => $date_now,
-                            'prediksi_luas_tanam'  => round($regression[$k])          
+                            'prediksi_luastanam'  => round($holt_winters[$k])          
                 );
                 print_r($data_prediksi); echo "<br>";
+                //$this->user_model->insertData('beras_prediksi2',$data_prediksi);
                 $a++;$k++;
 
         }
     }
-
 
     function clean($string) {
         $string = str_replace(' ', '', $string); // Replaces all spaces with hyphens.
