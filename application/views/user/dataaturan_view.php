@@ -135,16 +135,16 @@
                             <?php echo $rule_based_system[$no]->id_aturan;?>
                           </td>
                           <td>
-                            <?php echo $rule_based_system[$no]->stabilitas_harga;?>
+                            <?php echo $rule_based_system[$no]->kondisi_harga.' - '.$rule_based_system[$no]->stabilitas_harga;?>
                           </td>
                           <td>
-                            <?php echo $rule_based_system[$no]->musim;?>
+                            <?php echo $rule_based_system[$no]->kondisi_musim.' - '.$rule_based_system[$no]->musim;?>
                           </td>
                           <td>
-                            <?php echo $rule_based_system[$no]->bencana;?>
+                            <?php echo $rule_based_system[$no]->kondisi_bencana.' - '.$rule_based_system[$no]->bencana;?>
                           </td>
                           <td>
-                            <?php echo $rule_based_system[$no]->hama;?>
+                            <?php echo $rule_based_system[$no]->kondisi_hama.' - '.$rule_based_system[$no]->hama;?>
                           </td>
                           <td>
                             <?php echo $rule_based_system[$no]->nama_rekomendasi; ?>
@@ -337,17 +337,3 @@
     </div>
 <!-- end:: Body -->
             <?php include(APPPATH.'views\footer.php'); ?>
-
-            <script>
-        $(document).ready(function(){
-            $('.dataTables-example').DataTable({
-                dom: '<"html5buttons"B>lTfgitp',
-                "ordering": true,
-                buttons: [
-                    
-                    
-                ]
-
-            });
-        });
-    </script>

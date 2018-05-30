@@ -135,6 +135,8 @@
                                  });
                             </script>
                             <?php 
+
+                                $sta = 5;  
                                 $statusHET = $status_HET;
                                 $HET = $HET;
                                 if($aktual) {
