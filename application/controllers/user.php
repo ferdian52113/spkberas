@@ -180,9 +180,17 @@ class User extends CI_Controller {
                     }
 
                     if($bulan=='04' || $bulan=='03' || $bulan=='02' || $bulan=='01') {
-                        $data['luas_tanam_empat_bulan_sebelum'] = $this->user_model->get_luastanam_aktual($bulan+8,$tahun-1,$prov);
+                        $cek_data_aktual_4_bulan_lalu = $this->user_model->cek_waktu_aktual($bulan+8,$tahun-1,$prov);
+                        if($cek_data_aktual_4_bulan_lalu) {
+                        $data['luas_tanam_empat_bulan_sebelum'] = $this->user_model->get_luastanam_aktual($bulan+8,$tahun-1,$prov); } else {
+                        $data['luas_tanam_empat_bulan_sebelum'] = $this->user_model->get_luastanam_prediksi($bulan+8,$tahun-1,$prov);   
+                        }
                     } else {
-                        $data['luas_tanam_empat_bulan_sebelum'] = $this->user_model->get_luastanam_aktual($bulan-4,$tahun,$prov);
+                        $cek_data_aktual_4_bulan_lalu = $this->user_model->cek_waktu_aktual($bulan+8,$tahun-1,$prov);
+                        if($cek_data_aktual_4_bulan_lalu) {
+                        $data['luas_tanam_empat_bulan_sebelum'] = $this->user_model->get_luastanam_aktual($bulan-4,$tahun,$prov); } else {
+                        $data['luas_tanam_empat_bulan_sebelum'] = $this->user_model->get_luastanam_prediksi($bulan-4,$tahun,$prov);   
+                        }
                     }
                     $data['data_aktual_setaun'] = $this->user_model->get_data_aktual_setaun($tahun,$prov);
                     $data['data_prediksi_setaun'] = $this->user_model->get_data_prediksi_setaun($tahun,$prov);
@@ -370,11 +378,19 @@ class User extends CI_Controller {
             $bulan = $this->input->post('bulan');       
             $harga = $this->clean($this->input->post('harga'));       
             $produksi = $this->clean($this->input->post('produksi'));
+            $luastanam = $this->input->post('luastanam');
+            $curah_hujan = $this->input->post('curahhujan');
+            $banjir = $this->input->post('banjir');
+            $hama = $this->input->post('hama');
             if ($kategori=='Prediksi') {
                 $data = array(                
                         'id_prediksi'  => $id,
                         'prediksi_harga'  => $harga,
-                        'prediksi_produksi'  => $produksi
+                        'prediksi_produksi'  => $produksi,
+                        'prediksi_luastanam' => $luastanam,
+                        'prediksi_curahhujan' => $curah_hujan,
+                        'prediksi_banjir' => $banjir,
+                        'prediksi_hama' => $hama
                 );
                 $this->user_model->updateData('id_prediksi', $id, 'beras_prediksi', $data);
             }
@@ -382,7 +398,11 @@ class User extends CI_Controller {
                 $data = array(                
                         'id_aktual'  => $id,
                         'aktual_harga'  => $harga,
-                        'aktual_produksi'  => $produksi
+                        'aktual_produksi'  => $produksi,
+                        'aktual_luastanam' => $luastanam,
+                        'aktual_curahhujan' => $curah_hujan,
+                        'aktual_banjir' => $banjir,
+                        'aktual_hama' => $hama
                 );
                 $this->user_model->updateData('id_aktual', $id, 'beras_aktual', $data);
             }
@@ -911,7 +931,7 @@ class User extends CI_Controller {
                 $data['provinsi_pilih'] = $provinsi;
 
                 //reverse bulan dan prov menjadi angka
-                //$tahun=2016;
+                //$tahun=2018;
                 $prov = $this->user_model->ubah_provinsi($provinsi);
 
                 $tanggal_pilih = $tahun.'-'.'01'.'-01'; 
@@ -925,80 +945,96 @@ class User extends CI_Controller {
                     $this->session->set_flashdata('msg2', '<div class="alert animated fadeInRight alert-danger">Anda sudah melakukan forecast pada tahun ini.</div>');
                 } else if (!$cek_data_prediksi && !$cek_data_prediksi_tahun_sebelumnya) {
                     $this->session->set_flashdata('msg2', '<div class="alert animated fadeInRight alert-danger">Pastikan tahun sebelumnya sudah terforecast.</div>');
-                } else {
+                } else { 
+                    $data_aktual_prediksi = $this->user_model->get_data_aktual_prediksi($prov,2008,2016);
+                    $data_aktual_prediksi2 = $this->user_model->get_data_aktual_prediksi($prov,2008,2016);
+                    $data_aktual_prediksi3 = $this->user_model->get_data_aktual_prediksi($prov,2008,2017);
+                    $data_aktual_prediksi4 = $this->user_model->get_data_aktual_prediksi($prov,2010,2017);
+                    $data_luas = array_fill(0, count($data_aktual_prediksi), 0);
+                    $data_curah = array_fill(0, count($data_aktual_prediksi2), 0); 
+                    $data_banjir = array_fill(0, count($data_aktual_prediksi3), 0);
+                    $data_hama = array_fill(0, count($data_aktual_prediksi4), 0);
+                
+                    //membuat data
+                    for ($i=0; $i < count($data_aktual_prediksi); $i++) { 
+                        $data_luas[$i] = $data_aktual_prediksi[$i]['aktual_luastanam'];
+                    }
+                    for ($i=0; $i < count($data_aktual_prediksi2); $i++) { 
+                        $data_curah[$i] = $data_aktual_prediksi2[$i]['aktual_curahhujan'];
+                    }
+                    for ($i=0; $i < count($data_aktual_prediksi3); $i++) { 
+                        $data_banjir[$i] = $data_aktual_prediksi3[$i]['aktual_banjir'];
+                    }
+                    for ($i=0; $i < count($data_aktual_prediksi4); $i++) { 
+                        $data_hama[$i] = $data_aktual_prediksi4[$i]['aktual_hama'];
+                    }
+
 
                     if($prov==01) {
-                        $alpha_luas = 0.078836919; $beta_luas = 0; $gamma_luas = 0.586779366;
-                        $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
-                        $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
-                        $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
+                        $alpha_luas = 0; $beta_luas = 0; $gamma_luas = 0.6300506;
+                        $alpha_curah = 0.128221464; $beta_curah = 0; $gamma_curah = 0.06417193;
+                        $alpha_bencana = 0.996052658; $beta_bencana = 0.007958421; $gamma_bencana = 0.109041698;
+                        $alpha_hama = 0.128954573; $beta_hama = 0.045852844; $gamma_hama = 0.997973471;
                     } else if($prov==02) {
-                        $alpha_luas = 0; $beta_luas = 0; $gamma_luas = 0;
-                        $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
-                        $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
-                        $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
+                        $alpha_luas = 0.003415; $beta_luas = 0.868953; $gamma_luas = 0.4306614;
+                        $alpha_curah = 0.02846213; $beta_curah = 0.068183987; $gamma_curah = 0.434170925;
+                        $alpha_bencana = 0.988178626; $beta_bencana = 0.022746341; $gamma_bencana = 1;
+                        $alpha_hama = 0.037146395; $beta_hama = 0; $gamma_hama = 0.550835495;
                     } else if($prov==03) {
-                        $alpha_luas = 0; $beta_luas = 0; $gamma_luas = 0;
-                        $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
-                        $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
-                        $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
+                        $alpha_luas = 0.002963; $beta_luas = 0.967999; $gamma_luas = 0.3953132;
+                        $alpha_curah = 0.110510574; $beta_curah = 0; $gamma_curah = 0.23285226;
+                        $alpha_bencana = 0.994848977; $beta_bencana = 0.010567373; $gamma_bencana = 1;
+                        $alpha_hama = 0.058810224; $beta_hama = 0.067325231; $gamma_hama = 0.757071779;
                     } else if($prov==04) {
-                        $alpha_luas = 0; $beta_luas = 0; $gamma_luas = 0;
-                        $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
-                        $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
-                        $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
+                        $alpha_luas = 0.063655; $beta_luas = 0.040429; $gamma_luas = 0.2861521;
+                        $alpha_curah = 0.114097845; $beta_curah = 0; $gamma_curah = 0.309729618;
+                        $alpha_bencana = 0.324546; $beta_bencana = 0.203452; $gamma_bencana = 0.505443;
+                        $alpha_hama = 0.015304377; $beta_hama = 0.087128352; $gamma_hama = 0.022498269;
                     } else if($prov==05) {
-                        $alpha_luas = 0; $beta_luas = 0; $gamma_luas = 0;
-                        $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
-                        $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
-                        $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
+                        $alpha_luas = 0.005431; $beta_luas = 1; $gamma_luas = 0.8973619;
+                        $alpha_curah = 0.069281072; $beta_curah = 0.009186113; $gamma_curah = 0.280540002;
+                        $alpha_bencana = 0.996818764; $beta_bencana = 0.006427062; $gamma_bencana = 0.375932812;
+                        $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0.480689312;
                     } else if($prov==06) {
-                        $alpha_luas = 0; $beta_luas = 0; $gamma_luas = 0;
-                        $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
-                        $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
-                        $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
+                        $alpha_luas = 0.003807; $beta_luas = 1; $gamma_luas = 0.5793015 ;
+                        $alpha_curah = 0.291867898; $beta_curah = 0.01108796; $gamma_curah = 0.533729623;
+                        $alpha_bencana = 0.99453; $beta_bencana = 0.034522; $gamma_bencana = 0.289342;
+                        $alpha_hama = 0.326191327; $beta_hama = 0.011697057; $gamma_hama = 0.947391434;
                     } else if($prov==07) {
-                        $alpha_luas = 0; $beta_luas = 0; $gamma_luas = 0;
-                        $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
-                        $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
-                        $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
+                        $alpha_luas = 0.018610; $beta_luas = 0; $gamma_luas = 0.5253342;
+                        $alpha_curah = 0.319469416; $beta_curah = 0; $gamma_curah = 0;
+                        $alpha_bencana = 0.983084738; $beta_bencana = 0.035613757; $gamma_bencana = 1;
+                        $alpha_hama = 0.677206114; $beta_hama = 0; $gamma_hama = 0.198920786;
                     } else if($prov==08) {
-                        $alpha_luas = 0; $beta_luas = 0; $gamma_luas = 0;
-                        $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
-                        $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
-                        $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
+                        $alpha_luas = 0.007335; $beta_luas = 0.306771; $gamma_luas = 0.3039362;
+                        $alpha_curah = 0.234524328; $beta_curah = 0.000704396; $gamma_curah = 0.472553846;
+                        $alpha_bencana = 0.995906264; $beta_bencana = 0.008271078; $gamma_bencana = 1;
+                        $alpha_hama = 0.090185185; $beta_hama = 0.019732873; $gamma_hama = 0.339188915;
                     } else if($prov==09) {
-                        $alpha_luas = 0; $beta_luas = 0; $gamma_luas = 0;
-                        $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
-                        $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
-                        $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
+                        $alpha_luas = 0.085126; $beta_luas = 0.052159; $gamma_luas = 0.0236350;
+                        $alpha_curah = 0.370860926; $beta_curah = 0.009231879; $gamma_curah = 0.669860678;
+                        $alpha_bencana = 0.99222733; $beta_bencana = 0.015321854; $gamma_bencana = 1;
+                        $alpha_hama = 0; $beta_hama = 0.015320044; $gamma_hama = 0.332520883;
                     } else if($prov==10) {
-                        $alpha_luas = 0; $beta_luas = 0; $gamma_luas = 0;
-                        $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
-                        $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
-                        $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
+                        $alpha_luas = 0.003063; $beta_luas = 1; $gamma_luas = 0.458545;
+                        $alpha_curah = 0.101345869; $beta_curah = 0.009050179; $gamma_curah = 0.258687876;
+                        $alpha_bencana = 0.990195326; $beta_bencana = 0.02052048; $gamma_bencana = 1;
+                        $alpha_hama = 0.064935868; $beta_hama = 0.004366315; $gamma_hama = 0.411881538;
                     } else if($prov==11) {
-                        $alpha_luas = 0; $beta_luas = 0; $gamma_luas = 0;
-                        $alpha_curah = 0; $beta_curah = 0; $gamma_curah = 0;
-                        $alpha_bencana = 0; $beta_bencana = 0; $gamma_bencana = 0;
-                        $alpha_hama = 0; $beta_hama = 0; $gamma_hama = 0;
+                        $alpha_luas = 0.001708; $beta_luas = 0.802628; $gamma_luas = 0.3922652;
+                        $alpha_curah = 0.202675221; $beta_curah = 0.017820966; $gamma_curah = 0.507814697;
+                        $alpha_bencana = 0.994750163; $beta_bencana = 0.010733683; $gamma_bencana = 0.298129394;
+                        $alpha_hama = 0.45463375; $beta_hama = 0; $gamma_hama = 0.551864136;
                     }
-                
-                //$this->holtWinterBuWiwik($tahun,$season_length = 6, $alpha_luas, $beta_luas, $gamma_luas,$loc=$prov);
 
-
-                $this->forecastLuasTanam($tahun,$season_length = 12, $alpha_luas, $beta_luas, $gamma_luas,$loc=$prov);
-                $this->forecastProduksi($tahun,$prov);
-                $this->forecastHarga($tahun,$prov);
-                /*$this->forecastCurahHujan($season_length = 12, $alpha_curah, $beta_curah, $gamma_curah,$loc=$prov);
-                $this->forecastBencana($season_length = 12, $alpha_bencana, $beta_bencana, $gamma_bencana,$loc=$prov);
-                $this->forecastHama($season_length = 12, $alpha_hama, $beta_hama, $gamma_hama,$loc=$prov);*/
+                    $this->forecastLuasTanam($data_luas,$tahun,$season_length = 12, $alpha_luas, $beta_luas, $gamma_luas,$loc=$prov);
+                    $this->forecastProduksi($tahun,$prov);
+                    $this->forecastHarga($tahun,$prov);
+                    $this->forecastCurahHujan($data_curah,$tahun,$season_length = 12,$alpha_curah,$beta_curah,$gamma_curah,$loc=$prov);
+                    $this->forecastHama($data_hama,$tahun,$season_length = 12,$alpha_hama,$beta_hama,$gamma_hama,$loc=$prov);
+                    $this->forecastBencana($data_banjir,$tahun,$season_length = 12,$alpha_bencana,$beta_bencana,$gamma_bencana,$loc=$prov);
                 
-                }
-                
-                //$cek_data_aktual = $this->user_model->cek_waktu_aktual($bulan,$tahun,$prov);
-                //$cek_data_prediksi = $this->user_model->cek_waktu_prediksi($bulan,$tahun,$prov);
-               
+                }  
             }
             $this->load->view('user/forecast_view',$data);
         }
@@ -1007,8 +1043,7 @@ class User extends CI_Controller {
     }
 
 
-    function forecastLuasTanam($tahun,$season_length, $alpha, $beta, $gamma,$loc) {
-    $data = array (194599,76497,121151,260823,222666,125537,61885,78181,50220,123550,282295,340623,148100,91611,166660,259635,185047,117545,96525,89635,42683,92042,257353,329541,206084,113830,141104,229219,235581,134658,136069,94785,105647,178140,258919,279910,176936,130045,134839,189167,212180,161052,115853,60388,65371,56844,222749,382951,222048,105671,102665,226562,254944,135609,110371,68651,60463,81077,240507,363323,216940,112426,112955,225483,247383,143133,132867,102240,65581,81148,183321,364507,245689,120827,124884,196627,218754,195425,129256,105910,73512,66793,176480,326378,278742,119919,100666,194599,247756,152509,94717,84967,69417,41005,87356,348383,121226,101740,191464,245142,152457,93894,83590,68699,34712,79631,348189,129427);
+    function forecastLuasTanam($data,$tahun,$season_length, $alpha, $beta, $gamma, $loc) {
     
     $tahun_akhir_forecast=2016;
     $length_forecast = ($tahun-$tahun_akhir_forecast)*12;
@@ -1041,7 +1076,6 @@ class User extends CI_Controller {
         }
     
     $holt_winters = array_fill(0, count($data)+$length_forecast, 0);
-    $regression = array_fill(0, count($data)+$length_forecast, 0);
     $level = $initial_level;
     $trend = $initial_trend;
     $m=1;
@@ -1050,32 +1084,10 @@ class User extends CI_Controller {
 
             } else if ($i>=count($data)){
                 $alpha_level = $level;
-                $beta_trend = $trend*$m;
+                $beta_trend = $trend;
                 $season[$i] = $season[$i%$season_length+(count($data)-$season_length)]; 
-
-                if($loc==01) {
-                    $regression[$i] = -78990.3064005526 + 1.5202869917021*$alpha_level + 0*$beta_trend + 1.01128062797808 * $season[$i];
-                } else if($loc==02) {
-                    $regression[$i] = -157663.557244406 + 2.37814702176707*$alpha_level + 42.7692417201128*$beta_trend + 1.02761909746456* $season[$i];
-                } else if($loc==03) {
-                    $regression[$i] = -24406.6292092276 + 1.25174874219277*$alpha_level + 4.41452932029465*$beta_trend + 1.02323446514704 * $season[$i];
-                } else if($loc==04) {
-                    $regression[$i] =  67949419.2020113 + 1.12783457524249*$alpha_level + 215959.462573575*$beta_trend + 1.02867318606618 * $season[$i];
-                } else if($loc==05) {
-                    $regression[$i] = -3.27418092638254E-11 + 1*$alpha_level + -3.10036691064369E-15*$beta_trend + 1 * $season[$i];
-                } else if($loc==06) {
-                    $regression[$i] = -478.17186156489 + 1.01184610400827*$alpha_level + -0.0804756783555209*$beta_trend + 1.00594416094877 * $season[$i];
-                } else if($loc==07) {
-                    $regression[$i] = 73198.6660710314 + -0.763106500885188*$alpha_level + 24.9495351940806*$beta_trend + 0.951496584215959 * $season[$i];
-                } else if($loc==08) {
-                    $regression[$i] = -2166.86018826386 + 0.732384663813179*$alpha_level + -29.4173666932935*$beta_trend + 1.13384611870156 * $season[$i];
-                } else if($loc==09) {
-                    $regression[$i] = -6.13908923696727E-11 + 1*$alpha_level + 8.38708377611989E-15*$beta_trend + 1 * $season[$i];
-                } else if($loc==10) {
-                    $regression[$i] = -11067.3232420229 + 9.05444880796968*$alpha_level + 260.948287783574*$beta_trend + 1.22858168206032 * $season[$i];
-                } else if($loc==11) {
-                    $regression[$i] = 10135.5522619964 + 0.0374029780864185*$alpha_level + 0.85900464816731*$beta_trend + 0.0996083133906275 * $season[$i];
-                } 
+                $holt_winters[$i] = $alpha_level + ($beta_trend*$m)+$season[$i];
+                //echo ($i+1)." : ".$level."===".$trend*$m."===".$season[$i]."===".$holt_winters[$i]."<br>";
                 $m++;
             } else {
                 $temp_level = $level;
@@ -1084,35 +1096,12 @@ class User extends CI_Controller {
                 $trend = $beta * ($level - $temp_level) + ( 1.0 - $beta ) * $temp_trend;
                 $season[$i] = $gamma * ($data[$i] - $level) + (1.0 - $gamma) * $season[$i-$season_length];
                 $holt_winters[$i] = $temp_level + $temp_trend + $season[$i-$season_length];
-
-                if($loc==01) {
-                    $regression[$i] = -78990.3064005526 + 1.5202869917021*$level + 0*$trend + 1.01128062797808 * $season[$i];
-                } else if($loc==02) {
-                    $regression[$i] = -157663.557244406 + 2.37814702176707*$level + 42.7692417201128*$trend + 1.02761909746456* $season[$i];
-                } else if($loc==03) {
-                    $regression[$i] = -24406.6292092276 + 1.25174874219277*$level + 4.41452932029465*$trend + 1.02323446514704 * $season[$i];
-                } else if($loc==04) {
-                    $regression[$i] =  67949419.2020113 + 1.12783457524249*$level + 215959.462573575*$trend + 1.02867318606618 * $season[$i];
-                } else if($loc==05) {
-                    $regression[$i] = -3.27418092638254E-11 + 1*$level + -3.10036691064369E-15*$trend + 1 * $season[$i];
-                } else if($loc==06) {
-                    $regression[$i] = -478.17186156489 + 1.01184610400827*$level + -0.0804756783555209*$trend + 1.00594416094877 * $season[$i];
-                } else if($loc==07) {
-                    $regression[$i] = 73198.6660710314 + -0.763106500885188*$level + 24.9495351940806*$trend + 0.951496584215959 * $season[$i];
-                } else if($loc==08) {
-                    $regression[$i] = -2166.86018826386 + 0.732384663813179*$level + -29.4173666932935*$trend + 1.13384611870156 * $season[$i];
-                } else if($loc==09) {
-                    $regression[$i] = -6.13908923696727E-11 + 1*$level + 8.38708377611989E-15*$trend + 1 * $season[$i];
-                } else if($loc==10) {
-                    $regression[$i] = -11067.3232420229 + 9.05444880796968*$level + 260.948287783574*$trend + 1.22858168206032 * $season[$i];
-                } else if($loc==11) {
-                    $regression[$i] = 10135.5522619964 + 0.0374029780864185*$level + 0.85900464816731*$trend + 0.0996083133906275 * $season[$i];
-                } 
+                //echo ($i+1)." : ".$level."===".$trend."===".$season[$i]."===".$holt_winters[$i]."<br>";
             }
         }
-    //print_r($regression);
+    //print_r($holt_winters);\
         $a=1;
-        $k = count($regression)-12;
+        $k = count($holt_winters)-12;
         for ($i=1; $i <= 12; $i++) { 
                 $tanggal = $tahun.'-'.$a.'-01';
                 $date_now = date("Y-m-d",strtotime($tanggal));
@@ -1133,10 +1122,10 @@ class User extends CI_Controller {
                 $data_prediksi = array(                
                             'id_waktu'  => $date_now,
                             'id_provinsi' => $loc,
-                            'prediksi_luastanam'  => round($regression[$k])          
+                            'prediksi_luastanam'  => round($holt_winters[$k])          
                 );
                 //print_r($data_prediksi); echo "<br>";
-                $this->user_model->insertData('beras_prediksi2',$data_prediksi);
+                $this->user_model->insertData('beras_prediksi',$data_prediksi);
                 $a++;$k++;
 
         }
@@ -1195,8 +1184,12 @@ class User extends CI_Controller {
                         'id_waktu'  => $date_now,
                         'prediksi_produksi'  => round($prediksi_produksi)          
             );
+            $where = array(
+                    'id_waktu' => $date_now,
+                    'id_provinsi' => $prov
+                );
             //print_r($data_prediksi); echo "<br>";
-            $this->user_model->updateData('id_waktu', $date_now, 'beras_prediksi2', $data_prediksi);
+            $this->user_model->updateData2($where, 'beras_prediksi', $data_prediksi);
             $a++;
         }
     }
@@ -1277,16 +1270,310 @@ class User extends CI_Controller {
                         'id_waktu'  => $date_now,
                         'prediksi_harga'  => round($prediksi_harga)          
             );
-
+            $where = array(
+                    'id_waktu' => $date_now,
+                    'id_provinsi' => $prov
+                );
             //print_r($data_prediksi); echo "<br>";
-            $this->user_model->updateData('id_waktu', $date_now, 'beras_prediksi2', $data_prediksi);
+            $this->user_model->updateData2($where, 'beras_prediksi', $data_prediksi);
             $a++;
         }
     }
 
+    function forecastCurahHujan($data,$tahun,$season_length, $alpha, $beta, $gamma, $loc) {
+    
+    $tahun_akhir_forecast=2016;
+    $length_forecast = ($tahun-$tahun_akhir_forecast)*12;
+    // Menghitung initial level
+    $initial_level = 0;
+        for($i = 0; $i < $season_length; $i++) {
+            $initial_level += $data[$i];
+        }
+    $initial_level /= $season_length;  
+
+    //Menghitung initial trend
+    $trend1 = 0;
+        for($i = 0; $i < $season_length; $i++) {
+            $trend1 += $data[$i];
+        }
+    $trend1 /= $season_length;
+    
+    $trend2 = 0;
+        for($i = $season_length; $i < 2*$season_length; $i++) {
+            $trend2 += $data[$i];
+        }
+    $trend2 /= $season_length;
+
+    $initial_trend = ($trend2 - $trend1) / $season_length;
+    
+    // Menghitung initial season
+    $season = array_fill(0, count($data), 0);
+        for($i = 0; $i < $season_length; $i++) {
+            $season[$i] = $data[$i] - $initial_level;
+        }
+    
+    $holt_winters = array_fill(0, count($data)+$length_forecast, 0);
+    $level = $initial_level;
+    $trend = $initial_trend;
+    $m=1;
+        for($i=0;$i<count($data)+$length_forecast;$i++){
+            if($i<$season_length) {
+
+            } else if ($i>=count($data)){
+                $alpha_level = $level;
+                $beta_trend = $trend;
+                $season[$i] = $season[$i%$season_length+(count($data)-$season_length)]; 
+                $holt_winters[$i] = $alpha_level + ($beta_trend*$m)+$season[$i];
+                //echo ($i+1)." : ".$level."===".$trend*$m."===".$season[$i]."===".$holt_winters[$i]."<br>";
+                $m++;
+            } else {
+                $temp_level = $level;
+                $temp_trend = $trend;
+                $level = $alpha * ($data[$i] - $season[$i-$season_length]) + (1.0 - $alpha) * ($temp_level + $temp_trend);
+                $trend = $beta * ($level - $temp_level) + ( 1.0 - $beta ) * $temp_trend;
+                $season[$i] = $gamma * ($data[$i] - $level) + (1.0 - $gamma) * $season[$i-$season_length];
+                $holt_winters[$i] = $temp_level + $temp_trend + $season[$i-$season_length];
+                //echo ($i+1)." : ".$level."===".$trend."===".$season[$i]."===".$holt_winters[$i]."<br>";
+            }
+        }
+    //print_r($holt_winters);\
+        $a=1;
+        $k = count($holt_winters)-12;
+        for ($i=1; $i <= 12; $i++) { 
+                $tanggal = $tahun.'-'.$a.'-01';
+                $date_now = date("Y-m-d",strtotime($tanggal));
+
+                $data_prediksi = array(                
+                            'id_waktu'  => $date_now,
+                            'id_provinsi' => $loc,
+                            'prediksi_curahhujan'  => round($holt_winters[$k],2)          
+                );
+
+                $where = array(
+                    'id_waktu' => $date_now,
+                    'id_provinsi' => $loc
+                );
+                //print_r($data_prediksi); echo "<br>";
+                $this->user_model->updateData2($where, 'beras_prediksi', $data_prediksi);
+                $a++;$k++;
+
+        }
+    }
+
+    function forecastHama($data,$tahun,$season_length, $alpha, $beta, $gamma, $loc) {
+    
+    $tahun_akhir_forecast=2017;
+    $length_forecast = ($tahun-$tahun_akhir_forecast)*12;
+    // Menghitung initial level
+    $initial_level = 0;
+        for($i = 0; $i < $season_length; $i++) {
+            $initial_level += $data[$i];
+        }
+    $initial_level /= $season_length;  
+
+    //Menghitung initial trend
+    $trend1 = 0;
+        for($i = 0; $i < $season_length; $i++) {
+            $trend1 += $data[$i];
+        }
+    $trend1 /= $season_length;
+    
+    $trend2 = 0;
+        for($i = $season_length; $i < 2*$season_length; $i++) {
+            $trend2 += $data[$i];
+        }
+    $trend2 /= $season_length;
+
+    $initial_trend = ($trend2 - $trend1) / $season_length;
+    
+    // Menghitung initial season
+    $season = array_fill(0, count($data), 0);
+        for($i = 0; $i < $season_length; $i++) {
+            $season[$i] = $data[$i] - $initial_level;
+        }
+    
+    $holt_winters = array_fill(0, count($data)+$length_forecast, 0);
+    $level = $initial_level;
+    $trend = $initial_trend;
+    $m=1;
+        for($i=0;$i<count($data)+$length_forecast;$i++){
+            if($i<$season_length) {
+
+            } else if ($i>=count($data)){
+                $alpha_level = $level;
+                $beta_trend = $trend;
+                $season[$i] = $season[$i%$season_length+(count($data)-$season_length)]; 
+                $holt_winters[$i] = $alpha_level + ($beta_trend*$m)+$season[$i];
+                //echo ($i+1)." : ".$level."===".$trend*$m."===".$season[$i]."===".$holt_winters[$i]."<br>";
+                $m++;
+            } else {
+                $temp_level = $level;
+                $temp_trend = $trend;
+                $level = $alpha * ($data[$i] - $season[$i-$season_length]) + (1.0 - $alpha) * ($temp_level + $temp_trend);
+                $trend = $beta * ($level - $temp_level) + ( 1.0 - $beta ) * $temp_trend;
+                $season[$i] = $gamma * ($data[$i] - $level) + (1.0 - $gamma) * $season[$i-$season_length];
+                $holt_winters[$i] = $temp_level + $temp_trend + $season[$i-$season_length];
+                //echo ($i+1)." : ".$level."===".$trend."===".$season[$i]."===".$holt_winters[$i]."<br>";
+            }
+        }
+    //print_r($holt_winters);\
+        $a=1;
+        $k = count($holt_winters)-12;
+        for ($i=1; $i <= 12; $i++) { 
+                $tanggal = $tahun.'-'.$a.'-01';
+                $date_now = date("Y-m-d",strtotime($tanggal));
+
+                $data_prediksi = array(                
+                            'id_waktu'  => $date_now,
+                            'id_provinsi' => $loc,
+                            'prediksi_hama'  => round($holt_winters[$k],2)          
+                );
+
+                $where = array(
+                    'id_waktu' => $date_now,
+                    'id_provinsi' => $loc
+                );
+                //print_r($data_prediksi); echo "<br>";
+                $this->user_model->updateData2($where, 'beras_prediksi', $data_prediksi);
+                $a++;$k++;
+
+        }
+    }
+
+
+
+    function forecastBencana($data,$tahun,$season_length, $alpha, $beta, $gamma, $loc) {
+    
+    $tahun_akhir_forecast=2017;
+    $length_forecast = ($tahun-$tahun_akhir_forecast)*12;
+    // Menghitung initial level
+    $initial_level = 0;
+        for($i = 0; $i < $season_length; $i++) {
+            $initial_level += $data[$i];
+        }
+    $initial_level /= $season_length;  
+
+    //Menghitung initial trend
+    $trend1 = 0;
+        for($i = 0; $i < $season_length; $i++) {
+            $trend1 += $data[$i];
+        }
+    $trend1 /= $season_length;
+    
+    $trend2 = 0;
+        for($i = $season_length; $i < 2*$season_length; $i++) {
+            $trend2 += $data[$i];
+        }
+    $trend2 /= $season_length;
+
+    $initial_trend = ($trend2 - $trend1) / $season_length;
+    
+    // Menghitung initial season
+    $season = array_fill(0, count($data), 0);
+        for($i = 0; $i < $season_length; $i++) {
+            $season[$i] = $data[$i] - $initial_level;
+        }
+    
+    $holt_winters = array_fill(0, count($data)+$length_forecast, 0);
+    $regression = array_fill(0, count($data)+$length_forecast, 0);
+    $level = $initial_level;
+    $trend = $initial_trend;
+    $m=1;
+        for($i=0;$i<count($data)+$length_forecast;$i++){
+            if($i<$season_length) {
+
+            } else if ($i>=count($data)){
+                $alpha_level = $level;
+                $beta_trend = $trend;
+                $season[$i] = $season[$i%$season_length+(count($data)-$season_length)]; 
+                $holt_winters[$i] = $alpha_level + ($beta_trend*$m)+$season[$i];
+
+                //Memilih fungsi berdasarkan provinsi
+                if($loc==01) {
+                    $regression[$i] = 1 / (1 + exp(-(-20.3246747736743+39.9353780368147*$alpha_level-13.3069086442463*$beta_trend+39.7370911810733*$season[$i])));
+                } else if($loc==02) {
+                    $regression[$i] = 1 / (1 + exp(-(-19.8232174050311+39.334946094649*$alpha_level+39.334946094649*$season[$i])));
+                } else if($loc==03) {
+                    $regression[$i] = 1 / (1 + exp(-(-19.4956729249286+38.8755651230481*$alpha_level+38.8755651230481*$season[$i])));
+                } else if($loc==04) {
+                    $regression[$i] = 1 / (1 + exp(-(-156.116598764488+279.658944758549*$alpha_level+1482.7160266092*$beta_trend+406.924045375036*$season[$i])));
+                } else if($loc==05) {
+                    $regression[$i] = 1 / (1 + exp(-(-19.3699548902529+38.7393025582527*$alpha_level-8.42557117598551*$beta_trend+38.5999189841977*$season[$i])));
+                } else if($loc==06) {
+                    $regression[$i] = 1 / (1 + exp(-(-18.8818137490035+38.1126475503864*$alpha_level+8.21479904482829*$beta_trend+41.082450817242*$season[$i])));
+                } else if($loc==07) {
+                    $regression[$i] = 1 / (1 + exp(-(-19.3000428656514+38.6420552850159*$alpha_level+38.6420552850159*$season[$i])));
+                } else if($loc==08) {
+                    $regression[$i] = 1 / (1 + exp(-(-19.4866678867802+39.2403156594594*$alpha_level+4.74465668766142E-12*$beta_trend+39.2403156594594*$season[$i])));
+                } else if($loc==09) {
+                    $regression[$i] = 1 / (1 + exp(-(-19.5660685185106+39.5524283336423*$alpha_level+39.5524283336422*$season[$i])));
+                } else if($loc==10) {
+                    $regression[$i] = 1 / (1 + exp(-(-19.5955148721781+39.6774973461151*$alpha_level+39.6774973461151*$season[$i])));
+                } else if($loc==11) {
+                    $regression[$i] = 1 / (1 + exp(-(-19.426137893808+38.8620378834958*$alpha_level-5.62323895791762*$beta_trend+38.7112850144303*$season[$i])));
+                }
+                //echo ($i+1)." : ".$level."===".$trend*$m."===".$season[$i]."===".round($regression[$i])."<br>";
+                $m++;
+            } else {
+                $temp_level = $level;
+                $temp_trend = $trend;
+                $level = $alpha * ($data[$i] - $season[$i-$season_length]) + (1.0 - $alpha) * ($temp_level + $temp_trend);
+                $trend = $beta * ($level - $temp_level) + ( 1.0 - $beta ) * $temp_trend;
+                $season[$i] = $gamma * ($data[$i] - $level) + (1.0 - $gamma) * $season[$i-$season_length];
+                $holt_winters[$i] = $temp_level + $temp_trend + $season[$i-$season_length];
+                //Memilih fungsi berdasarkan provinsi
+                if($loc==01) {
+                    $regression[$i] = 1 / (1 + exp(-(-20.3246747736743+39.9353780368147*$level-13.3069086442463*$trend+39.7370911810733*$season[$i])));
+                } else if($loc==02) {
+                    $regression[$i] = 1 / (1 + exp(-(-19.8232174050311+39.334946094649*$level+39.334946094649*$season[$i])));
+                } else if($loc==03) {
+                    $regression[$i] = 1 / (1 + exp(-(-19.4956729249286+38.8755651230481*$level+38.8755651230481*$season[$i])));
+                } else if($loc==04) {
+                    $regression[$i] = 1 / (1 + exp(-(-156.116598764488+279.658944758549*$level+1482.7160266092*$trend+406.924045375036*$season[$i])));
+                } else if($loc==05) {
+                    $regression[$i] = 1 / (1 + exp(-(-19.3699548902529+38.7393025582527*$level-8.42557117598551*$trend+38.5999189841977*$season[$i])));
+                } else if($loc==06) {
+                    $regression[$i] = 1 / (1 + exp(-(-18.8818137490035+38.1126475503864*$level+8.21479904482829*$trend+41.082450817242*$season[$i])));
+                } else if($loc==07) {
+                    $regression[$i] = 1 / (1 + exp(-(-19.3000428656514+38.6420552850159*$level+38.6420552850159*$season[$i])));
+                } else if($loc==08) {
+                    $regression[$i] = 1 / (1 + exp(-(-19.4866678867802+39.2403156594594*$level+4.74465668766142E-12*$trend+39.2403156594594*$season[$i])));
+                } else if($loc==09) {
+                    $regression[$i] = 1 / (1 + exp(-(-19.5660685185106+39.5524283336423*$level+39.5524283336422*$season[$i])));
+                } else if($loc==10) {
+                    $regression[$i] = 1 / (1 + exp(-(-19.5955148721781+39.6774973461151*$level+39.6774973461151*$season[$i])));
+                } else if($loc==11) {
+                    $regression[$i] = 1 / (1 + exp(-(-19.426137893808+38.8620378834958*$level-5.62323895791762*$trend+38.7112850144303*$season[$i])));
+                }
+                //echo ($i+1)." : ".$level."===".$trend."===".$season[$i]."===".round($regression[$i])."<br>";
+            }
+        }
+    //print_r($holt_winters);\
+        $a=1;
+        $k = count($regression)-12;
+        for ($i=1; $i <= 12; $i++) { 
+                $tanggal = $tahun.'-'.$a.'-01';
+                $date_now = date("Y-m-d",strtotime($tanggal));
+
+                $data_prediksi = array(                
+                            'id_waktu'  => $date_now,
+                            'id_provinsi' => $loc,
+                            'prediksi_banjir'  => round($regression[$k])          
+                );
+
+                $where = array(
+                    'id_waktu' => $date_now,
+                    'id_provinsi' => $loc
+                );
+                //print_r($data_prediksi); echo "<br>";
+                $this->user_model->updateData2($where, 'beras_prediksi', $data_prediksi);
+                $a++;$k++;
+
+        }
+    }
     
 
-    function holtWinterBuWiwik($tahun,$season_length, $alpha, $beta, $gamma,$loc) {
+    /*function holtWinterBuWiwik($tahun,$season_length, $alpha, $beta, $gamma,$loc) {
     $data = array (194599,76497,121151,260823,222666,125537,61885,78181,50220,123550,282295,340623,148100,91611,166660,259635,185047,117545,96525,89635,42683,92042,257353,329541,206084,113830,141104,229219,235581,134658,136069,94785,105647,178140,258919,279910,176936,130045,134839,189167,212180,161052,115853,60388,65371,56844,222749,382951,222048,105671,102665,226562,254944,135609,110371,68651,60463,81077,240507,363323,216940,112426,112955,225483,247383,143133,132867,102240,65581,81148,183321,364507,245689,120827,124884,196627,218754,195425,129256,105910,73512,66793,176480,326378,278742,119919,100666,194599,247756,152509,94717,84967,69417,41005,87356,348383,121226,101740,191464,245142,152457,93894,83590,68699,34712,79631,348189,129427);
     
     $tahun_akhir_forecast=2016;
@@ -1365,7 +1652,7 @@ class User extends CI_Controller {
                 $a++;$k++;
 
         }
-    }
+    }*/
 
     function clean($string) {
         $string = str_replace(' ', '', $string); // Replaces all spaces with hyphens.

@@ -223,7 +223,7 @@
                                 }*/
 
                                 //Rule Based System
-                                foreach ($rule_based_system as $rule) {
+                                /*foreach ($rule_based_system as $rule) {
                                     if($stabilitas_harga==$rule->stabilitas_harga AND $musim==$rule->musim AND $bencana==$rule->bencana AND $hama==$rule->hama){
                                         $namarekomendasi = $rule->id_rekomendasi;
                                         $rekomendasi1 = $rule->rekomendasi_1;
@@ -232,9 +232,9 @@
                                     }
                                     echo "if ".$rule->stabilitas_harga." and ".$rule->musim." and ".$rule->bencana." and ".$rule->hama." then ".$rule->id_rekomendasi;
                                     echo '<br>';
-                                }
+                                }*/
 
-                                /*if($stabilitas_harga=='Stabil') {
+                                if($stabilitas_harga=='Stabil') {
                                     if($musim=='Penghujan') {
                                         if($bencana=='Tidak Ada Bencana') {
                                             if($hama=='Tidak Ada Hama') {
@@ -302,7 +302,7 @@
                                         $rekomendasi2 = $rule->rekomendasi_2;
                                         $rekomendasi3 = $rule->rekomendasi_3; 
                                     }
-                                }*/
+                                }
                                 print_r('status HET : '.$status_HET.'<br>');
                                 print_r('HET : '.$HET.'<br>');
                                 print_r('harga : '.$harga.'<br>');

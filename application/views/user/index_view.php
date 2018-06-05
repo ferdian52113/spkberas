@@ -203,7 +203,7 @@
                                                     <?php echo $data['provinsi']; ?>
                                                   </td>
                                                   <td style="width:30%">
-                                                    <?php echo number_format($data['produksi'],0,".","."); ?> Ton
+                                                    <?php echo number_format(abs($data['produksi']),0,".","."); ?> Ton
                                                   </td>
                                                 </tr>
                                             <?php } }?>
@@ -235,16 +235,16 @@
                                                     $data_aktual1 = '';
                                                     $data_aktual2 = '';
                                                     foreach ($data_aktual_setaun as $row) {
-                                                        $data_aktual1 .= $row['aktual_harga']. ", ";
-                                                        $data_aktual2 .= $row['aktual_produksi']. ", ";
+                                                        $data_aktual1 .= abs($row['aktual_harga']). ", ";
+                                                        $data_aktual2 .= abs($row['aktual_produksi']). ", ";
                                                     }
                                                 }
                                                 if($prediksi){ 
                                                     $data_prediksi1 = '';
                                                     $data_prediksi2 = '';
                                                     foreach ($data_prediksi_setaun as $row) {
-                                                        $data_prediksi1 .= $row['prediksi_harga']. ", ";
-                                                        $data_prediksi2 .= $row['prediksi_produksi']. ", ";
+                                                        $data_prediksi1 .= abs($row['prediksi_harga']). ", ";
+                                                        $data_prediksi2 .= abs($row['prediksi_produksi']). ", ";
                                                     }
                                                 }
                                             ?>

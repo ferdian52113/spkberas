@@ -144,7 +144,7 @@
                                                       <td><span><?php echo $data['aktual_produksi']." Ton";?></span></td>
                                                       <td><span><?php echo $data['aktual_luastanam']. " Ha";?></span></td>
                                                       <td><span><?php echo $data['aktual_curahhujan']." mm";?></span></td>
-                                                      <td><span><?php if($data['aktual_banjir']>=1) {echo "Banjir";} else {echo "Tidak";};?></span></td>
+                                                      <td><span><?php if($data['aktual_banjir']>=1) {echo "Ya";} else {echo "Tidak";};?></span></td>
                                                       <td><span><?php echo $data['aktual_hama']. " Ha";?></span></td>
                                                       <td><a href="<?php echo base_url('user/editData/'.$kategori1.'/'.$data['id_aktual'])?>" class="m-btn m-btn--pill m-btn--hover-brand btn btn-sm btn-primary"/>
                                                       Edit
@@ -162,7 +162,7 @@
                                                           <td><span><?php echo $data['aktual_produksi']." Ton";?></span></td>
                                                           <td><span><?php echo $data['aktual_luastanam']. " Ha";?></span></td>
                                                           <td><span><?php echo $data['aktual_curahhujan']." mm";?></span></td>
-                                                          <td><span><?php if($data['aktual_banjir']>=1) {echo "Banjir";} else {echo "Tidak";};?></span></td>
+                                                          <td><span><?php if($data['aktual_banjir']>=1) {echo "Ya";} else {echo "Tidak";};?></span></td>
                                                           <td><span><?php echo $data['aktual_hama']. " Ha";?></span></td>
                                                           <td><a href="<?php echo base_url('user/editData/'.$kategori1.'/'.$data['id_aktual'])?>" class="m-btn m-btn--pill m-btn--hover-brand btn btn-sm btn-primary"/>
                                                           Edit
@@ -220,10 +220,10 @@
                                                     <td><span><?php echo $waktu; ?></span></td>
                                                     <td><span><?php echo $data['provinsi'];?></span></td>
                                                     <td><span><?php echo "Rp. ".$data['prediksi_harga'];?></span></td>      
-                                                    <td><span><?php echo $data['prediksi_produksi']." Ton";?></span></td>
-                                                    <td><span><?php echo $data['prediksi_luastanam']. " Ha";?></span></td>
+                                                    <td><span><?php echo abs($data['prediksi_produksi'])." Ton";?></span></td>
+                                                    <td><span><?php echo abs($data['prediksi_luastanam']). " Ha";?></span></td>
                                                     <td><span><?php echo $data['prediksi_curahhujan']." mm";?></span></td>
-                                                    <td><span><?php if($data['prediksi_banjir']>=1) {echo "Banjir";} else {echo "Tidak";};?></span></td>
+                                                    <td><span><?php if($data['prediksi_banjir']>=1) {echo "Ya";} else {echo "Tidak";};?></span></td>
                                                     <td><span><?php echo $data['prediksi_hama']. " Ha";?></span></td>
                                                     <td><a href="<?php echo base_url('user/editData/'.$kategori2.'/'.$data['id_prediksi'])?>" class="m-btn m-btn--pill m-btn--hover-brand btn btn-sm btn-primary"/>
                                                     Edit
@@ -241,7 +241,7 @@
                                                     <td><span><?php echo $data['prediksi_produksi']." Ton";?></span></td>
                                                     <td><span><?php echo $data['prediksi_luastanam']. " Ha";?></span></td>
                                                     <td><span><?php echo $data['prediksi_curahhujan']." mm";?></span></td>
-                                                    <td><span><?php if($data['prediksi_banjir']>=1) {echo "Banjir";} else {echo "Tidak";};?></span></td>
+                                                    <td><span><?php if($data['prediksi_banjir']>=1) {echo "Ya";} else {echo "Tidak";};?></span></td>
                                                     <td><span><?php echo $data['prediksi_hama']. " Ha";?></span></td>
                                                     <td><a href="<?php echo base_url('user/editData/'.$kategori2.'/'.$data['id_prediksi'])?>" class="m-btn m-btn--pill m-btn--hover-brand btn btn-sm btn-primary"/>
                                                     Edit

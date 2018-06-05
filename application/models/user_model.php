@@ -100,7 +100,7 @@ class User_model extends CI_Model {
 
     //Prediksi
     public function get_data_prediksi() {
-        $sql = "select * from beras_prediksi2 a JOIN waktu b on a.id_waktu=b.id_waktu JOIN provinsi c on a.id_provinsi=c.id_provinsi";
+        $sql = "select * from beras_prediksi a JOIN waktu b on a.id_waktu=b.id_waktu JOIN provinsi c on a.id_provinsi=c.id_provinsi";
         $query = $this->db->query($sql);
         return $query->result_array();
     } 
@@ -109,32 +109,32 @@ class User_model extends CI_Model {
         $date = $thn.'-'.$bln.'-01';
         $tgl = date("Y-m-d",strtotime($date)); 
         //echo $tgl;
-        $sql = "select *,a.prediksi_harga as harga from beras_prediksi2 a JOIN waktu b on a.id_waktu=b.id_waktu JOIN provinsi c on a.id_provinsi=c.id_provinsi where a.id_waktu='$tgl' AND a.id_provinsi='$prov'";                
+        $sql = "select *,a.prediksi_harga as harga from beras_prediksi a JOIN waktu b on a.id_waktu=b.id_waktu JOIN provinsi c on a.id_provinsi=c.id_provinsi where a.id_waktu='$tgl' AND a.id_provinsi='$prov'";                
         $query = $this->db->query($sql);           
         return $query->result_array();
     }
 
     public function get_data_prediksi_setaun($tahun,$provinsi){
-        $sql = "select * from beras_prediksi2 where year(id_waktu) = $tahun and id_provinsi=$provinsi ORDER BY id_waktu ASC";
+        $sql = "select * from beras_prediksi where year(id_waktu) = $tahun and id_provinsi=$provinsi ORDER BY id_waktu ASC";
         $query = $this->db->query($sql);            
         return $query->result_array();
     }
 
     public function findPrediksi($id_prediksi) {
-        $sql = "SELECT * from beras_prediksi2 a JOIN waktu b on a.id_waktu=b.id_waktu JOIN provinsi c on a.id_provinsi=c.id_provinsi where id_prediksi=$id_prediksi";
+        $sql = "SELECT * from beras_prediksi a JOIN waktu b on a.id_waktu=b.id_waktu JOIN provinsi c on a.id_provinsi=c.id_provinsi where id_prediksi=$id_prediksi";
         $query  = $this->db->query($sql);
         $result = $query->row();
         return $result;
     }
 
     public function rank_harga_prediksi($bulan,$tahun) {
-        $sql = "SELECT c.id_provinsi,c.provinsi,a.prediksi_harga as harga,c.long,c.lat FROM beras_prediksi2 a JOIN waktu b ON a.id_waktu=b.id_waktu JOIN provinsi c ON a.id_provinsi=c.id_provinsi WHERE YEAR(b.id_waktu)=$tahun AND MONTH(b.id_waktu)=$bulan ORDER BY a.prediksi_harga DESC";
+        $sql = "SELECT c.id_provinsi,c.provinsi,a.prediksi_harga as harga,c.long,c.lat FROM beras_prediksi a JOIN waktu b ON a.id_waktu=b.id_waktu JOIN provinsi c ON a.id_provinsi=c.id_provinsi WHERE YEAR(b.id_waktu)=$tahun AND MONTH(b.id_waktu)=$bulan ORDER BY a.prediksi_harga DESC";
         $query = $this->db->query($sql);
         return $query->result_array();
     }
 
     public function rank_produksi_prediksi($bulan,$tahun) {
-        $sql = "SELECT c.id_provinsi,c.provinsi,a.prediksi_produksi as produksi,c.long,c.lat FROM beras_prediksi2 a JOIN waktu b ON a.id_waktu=b.id_waktu JOIN provinsi c ON a.id_provinsi=c.id_provinsi WHERE YEAR(b.id_waktu)=$tahun AND MONTH(b.id_waktu)=$bulan ORDER BY a.prediksi_produksi DESC";
+        $sql = "SELECT c.id_provinsi,c.provinsi,a.prediksi_produksi as produksi,c.long,c.lat FROM beras_prediksi a JOIN waktu b ON a.id_waktu=b.id_waktu JOIN provinsi c ON a.id_provinsi=c.id_provinsi WHERE YEAR(b.id_waktu)=$tahun AND MONTH(b.id_waktu)=$bulan ORDER BY a.prediksi_produksi DESC";
         $query = $this->db->query($sql);
         return $query->result_array();
     }
@@ -144,7 +144,7 @@ class User_model extends CI_Model {
         $datenow = date("Y-m-d",strtotime($date));
         $dateago = date("Y-m-d",strtotime("-11 months",strtotime($datenow)));
 
-        $sql = "select b.id_waktu,b.bulan,a.prediksi_harga from beras_prediksi2 a, waktu b, provinsi c where a.id_provinsi=c.id_provinsi and a.id_waktu=b.id_waktu and (b.id_waktu BETWEEN '$dateago' and '$datenow') and c.id_provinsi='$provinsi' order by b.id_waktu DESC";      
+        $sql = "select b.id_waktu,b.bulan,a.prediksi_harga from beras_prediksi a, waktu b, provinsi c where a.id_provinsi=c.id_provinsi and a.id_waktu=b.id_waktu and (b.id_waktu BETWEEN '$dateago' and '$datenow') and c.id_provinsi='$provinsi' order by b.id_waktu DESC";      
         $query = $this->db->query($sql);        
         return $query->result_array();
     }
@@ -162,7 +162,7 @@ class User_model extends CI_Model {
         $date = $thn.'-'.$bln.'-01';
         $tgl = date("Y-m-d",strtotime($date)); 
         //echo $tgl;
-        $sql = "select prediksi_luastanam as luastanam from beras_prediksi2 a JOIN waktu b on a.id_waktu=b.id_waktu JOIN provinsi c on a.id_provinsi=c.id_provinsi where a.id_waktu='$tgl' AND a.id_provinsi='$prov'";                
+        $sql = "select prediksi_luastanam as luastanam from beras_prediksi a JOIN waktu b on a.id_waktu=b.id_waktu JOIN provinsi c on a.id_provinsi=c.id_provinsi where a.id_waktu='$tgl' AND a.id_provinsi='$prov'";                
         $query = $this->db->query($sql);           
         return $query->row()->luastanam;
     }
@@ -232,7 +232,7 @@ class User_model extends CI_Model {
         }
 
         public function cek_waktu_prediksi($bulan,$tahun,$provinsi) {
-        $sql = "select * from beras_prediksi2 where year(id_waktu) = $tahun and MONTH(id_waktu) = $bulan and id_provinsi=$provinsi";
+        $sql = "select * from beras_prediksi where year(id_waktu) = $tahun and MONTH(id_waktu) = $bulan and id_provinsi=$provinsi";
         $query = $this->db->query($sql);            
         return $query->row_array();
         }
@@ -244,7 +244,7 @@ class User_model extends CI_Model {
         }
 
         public function cek_prediksi($date,$provinsi) {
-        $sql = "select * from beras_prediksi2 where id_waktu='$date' and id_provinsi=$provinsi";
+        $sql = "select * from beras_prediksi where id_waktu='$date' and id_provinsi=$provinsi";
         $query = $this->db->query($sql);            
         return $query->row_array();
         }
@@ -262,8 +262,14 @@ class User_model extends CI_Model {
         $date = $date;
         $tgl = date("Y-m-d",strtotime($date)); 
         //echo $tgl;
-        $sql = "select *,a.prediksi_harga as harga from beras_prediksi2 a JOIN waktu b on a.id_waktu=b.id_waktu JOIN provinsi c on a.id_provinsi=c.id_provinsi where a.id_waktu='$tgl' AND a.id_provinsi='$prov'";                
+        $sql = "select *,a.prediksi_harga as harga from beras_prediksi a JOIN waktu b on a.id_waktu=b.id_waktu JOIN provinsi c on a.id_provinsi=c.id_provinsi where a.id_waktu='$tgl' AND a.id_provinsi='$prov'";                
         $query = $this->db->query($sql);           
+        return $query->result_array();
+        }
+
+        public function get_data_aktual_prediksi($provinsi,$tahun,$tahun2){
+        $sql = "select * from beras_aktual where id_provinsi=$provinsi AND year(id_waktu) BETWEEN $tahun AND $tahun2 ORDER BY id_waktu ASC";
+        $query = $this->db->query($sql);            
         return $query->result_array();
         }
     //Kondisi
@@ -318,6 +324,11 @@ class User_model extends CI_Model {
     
     public function updateData($param, $value, $table, $data) {
         $this->db->where($param, $value);
+        $this->db->update($table, $data);
+    }
+
+    public function updateData2($where, $table, $data) {
+        $this->db->where($where);
         $this->db->update($table, $data);
     }
     

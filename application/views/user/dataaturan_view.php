@@ -102,7 +102,7 @@
                         Kondisi Hama
                       </th>
                       <th title="Field #3">
-                        Aturan
+                        Rekomendasi
                       </th>
                       <th title="Field #4">
                         Aksi
