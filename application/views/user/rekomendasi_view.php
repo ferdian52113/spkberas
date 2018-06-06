@@ -597,30 +597,6 @@
                                                 <b>
                                                   <table class="table table-hover" style="font-size: 15px">      
                                                         <tbody>  
-                                                            <tr>
-                                                                <td width="33">
-                                                                    <?php echo $bulan_pilih; ?>
-                                                                </td>
-                                                                <td width="33">
-                                                                    :
-                                                                </td>
-                                                                <td width="33">
-                                                                    <?php echo $rekomendasi1; ?>
-                                                                </td>
-                                                            </tr>
-                                                            <?php if($rekomendasi2) {?>
-                                                            <tr>
-                                                                <td>
-                                                                    <?php echo $last_two_month; echo '-'; echo $last_one_month; ?>
-                                                                </td>
-                                                                <td>
-                                                                    :
-                                                                </td>
-                                                                <td>
-                                                                    <?php echo $rekomendasi2; ?>
-                                                                </td>
-                                                            </tr>
-                                                            <?php } ?>
                                                             <?php if($rekomendasi3) {?>
                                                             <tr>
                                                                 <td>
@@ -635,6 +611,30 @@
                                                                 </td>
                                                             </tr>
                                                             <?php } ?>
+                                                            <?php if($rekomendasi2) {?>
+                                                            <tr>
+                                                                <td>
+                                                                    <?php echo $last_two_month; echo '-'; echo $last_one_month; ?>
+                                                                </td>
+                                                                <td>
+                                                                    :
+                                                                </td>
+                                                                <td>
+                                                                    <?php echo $rekomendasi2; ?>
+                                                                </td>
+                                                            </tr>
+                                                            <?php } ?>
+                                                            <tr>
+                                                                <td width="33">
+                                                                    <?php echo $bulan_pilih; ?>
+                                                                </td>
+                                                                <td width="33">
+                                                                    :
+                                                                </td>
+                                                                <td width="33">
+                                                                    <?php echo $rekomendasi1; ?>
+                                                                </td>
+                                                            </tr>
                                                         </tbody> 
                                                   </table>
                                               </b>

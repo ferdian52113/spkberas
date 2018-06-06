@@ -60,16 +60,15 @@ class User extends CI_Controller {
             $cek_data_aktual = $this->user_model->cek_waktu_aktual($bulan,$tahun,$prov);
             $cek_data_prediksi = $this->user_model->cek_waktu_prediksi($bulan,$tahun,$prov);
 
-            if($cek_data_aktual && $cek_data_prediksi) {
+            if($cek_data_aktual['aktual_harga'] && $cek_data_prediksi['prediksi_harga']) {
                 $data['aktual'] = true;
                 $data['prediksi'] = true;     
-
                 $data['data_aktual_setaun'] = $this->user_model->get_data_aktual_setaun($tahun,$prov);
                 $data['data_prediksi_setaun'] = $this->user_model->get_data_prediksi_setaun($tahun,$prov); 
                 $data['rank_harga'] = $this->user_model->rank_harga($bulan,$tahun);
                 $data['rank_produksi'] = $this->user_model->rank_produksi($bulan,$tahun);
             }
-            else if($cek_data_prediksi) {
+            else if($cek_data_prediksi['prediksi_harga']) {
                 $data['aktual'] = false;
                 $data['prediksi'] = true;
                 $data['data_prediksi_setaun'] = $this->user_model->get_data_prediksi_setaun($tahun,$prov); 
@@ -77,7 +76,7 @@ class User extends CI_Controller {
                 $data['rank_produksi'] = $this->user_model->rank_produksi_prediksi($bulan,$tahun);
             }
 
-            else if($cek_data_aktual) {
+            else if($cek_data_aktual['aktual_harga']) {
                 $data['aktual'] = true;
                 $data['prediksi'] = false;
                 $data['data_aktual_setaun'] = $this->user_model->get_data_aktual_setaun($tahun,$prov); 
@@ -161,7 +160,7 @@ class User extends CI_Controller {
                 $cek_data_aktual = $this->user_model->cek_waktu_aktual($bulan,$tahun,$prov);
                 $cek_data_prediksi = $this->user_model->cek_waktu_prediksi($bulan,$tahun,$prov);
 
-                if($cek_data_aktual && $cek_data_prediksi) {
+                if($cek_data_aktual['aktual_harga'] && $cek_data_prediksi['prediksi_harga']) {
                     $data['aktual'] = true;
                     $data['prediksi'] = true;     
 
@@ -181,13 +180,13 @@ class User extends CI_Controller {
 
                     if($bulan=='04' || $bulan=='03' || $bulan=='02' || $bulan=='01') {
                         $cek_data_aktual_4_bulan_lalu = $this->user_model->cek_waktu_aktual($bulan+8,$tahun-1,$prov);
-                        if($cek_data_aktual_4_bulan_lalu) {
+                        if($cek_data_aktual_4_bulan_lalu['aktual_luastanam']) {
                         $data['luas_tanam_empat_bulan_sebelum'] = $this->user_model->get_luastanam_aktual($bulan+8,$tahun-1,$prov); } else {
                         $data['luas_tanam_empat_bulan_sebelum'] = $this->user_model->get_luastanam_prediksi($bulan+8,$tahun-1,$prov);   
                         }
                     } else {
                         $cek_data_aktual_4_bulan_lalu = $this->user_model->cek_waktu_aktual($bulan+8,$tahun-1,$prov);
-                        if($cek_data_aktual_4_bulan_lalu) {
+                        if($cek_data_aktual_4_bulan_lalu['aktual_luastanam']) {
                         $data['luas_tanam_empat_bulan_sebelum'] = $this->user_model->get_luastanam_aktual($bulan-4,$tahun,$prov); } else {
                         $data['luas_tanam_empat_bulan_sebelum'] = $this->user_model->get_luastanam_prediksi($bulan-4,$tahun,$prov);   
                         }
@@ -197,7 +196,7 @@ class User extends CI_Controller {
                     $data['rule_based_system'] = $this->user_model->get_rule();
 
                 }
-                else if($cek_data_prediksi) {
+                else if($cek_data_prediksi['prediksi_harga']) {
 
                     $data['aktual'] = false;
                     $data['prediksi'] = true;
@@ -210,9 +209,17 @@ class User extends CI_Controller {
                     }
 
                     if($bulan=='04' || $bulan=='03' || $bulan=='02' || $bulan=='01') {
-                        $data['luas_tanam_empat_bulan_sebelum'] = $this->user_model->get_luastanam_prediksi($bulan+8,$tahun-1,$prov);
+                        $cek_data_aktual_4_bulan_lalu = $this->user_model->cek_waktu_aktual($bulan+8,$tahun-1,$prov);
+                        if($cek_data_aktual_4_bulan_lalu['aktual_luastanam']) {
+                        $data['luas_tanam_empat_bulan_sebelum'] = $this->user_model->get_luastanam_aktual($bulan+8,$tahun-1,$prov); } else {
+                        $data['luas_tanam_empat_bulan_sebelum'] = $this->user_model->get_luastanam_prediksi($bulan+8,$tahun-1,$prov);   
+                        }
                     } else {
-                        $data['luas_tanam_empat_bulan_sebelum'] = $this->user_model->get_luastanam_prediksi($bulan-4,$tahun,$prov);
+                        $cek_data_aktual_4_bulan_lalu = $this->user_model->cek_waktu_aktual($bulan+8,$tahun-1,$prov);
+                        if($cek_data_aktual_4_bulan_lalu['aktual_luastanam']) {
+                        $data['luas_tanam_empat_bulan_sebelum'] = $this->user_model->get_luastanam_aktual($bulan-4,$tahun,$prov); } else {
+                        $data['luas_tanam_empat_bulan_sebelum'] = $this->user_model->get_luastanam_prediksi($bulan-4,$tahun,$prov);   
+                        }
                     }
 
                     $data['stabilitas'] = $this->user_model->get_stabilitas_prediksi($bulan,$tahun,$prov);
@@ -220,7 +227,7 @@ class User extends CI_Controller {
                     $data['rule_based_system'] = $this->user_model->get_rule(); 
                 }
 
-                else if($cek_data_aktual) {
+                else if($cek_data_aktual['aktual_harga']) {
                     $data['aktual'] = true;
                     $data['prediksi'] = false;
                     $data['data_aktual'] = $this->user_model->get_data_aktual_pilih($bulan,$tahun,$prov);
@@ -229,9 +236,17 @@ class User extends CI_Controller {
                     $data['data_aktual_setaun'] = $this->user_model->get_data_aktual_setaun($tahun,$prov); 
 
                     if($bulan=='04' || $bulan=='03' || $bulan=='02' || $bulan=='01') {
-                        $data['luas_tanam_empat_bulan_sebelum'] = $this->user_model->get_luastanam_aktual($bulan+8,$tahun-1,$prov);
+                        $cek_data_aktual_4_bulan_lalu = $this->user_model->cek_waktu_aktual($bulan+8,$tahun-1,$prov);
+                        if($cek_data_aktual_4_bulan_lalu['aktual_luastanam']) {
+                        $data['luas_tanam_empat_bulan_sebelum'] = $this->user_model->get_luastanam_aktual($bulan+8,$tahun-1,$prov); } else {
+                        $data['luas_tanam_empat_bulan_sebelum'] = $this->user_model->get_luastanam_prediksi($bulan+8,$tahun-1,$prov);   
+                        }
                     } else {
-                        $data['luas_tanam_empat_bulan_sebelum'] = $this->user_model->get_luastanam_aktual($bulan-4,$tahun,$prov);
+                        $cek_data_aktual_4_bulan_lalu = $this->user_model->cek_waktu_aktual($bulan+8,$tahun-1,$prov);
+                        if($cek_data_aktual_4_bulan_lalu['aktual_luastanam']) {
+                        $data['luas_tanam_empat_bulan_sebelum'] = $this->user_model->get_luastanam_aktual($bulan-4,$tahun,$prov); } else {
+                        $data['luas_tanam_empat_bulan_sebelum'] = $this->user_model->get_luastanam_prediksi($bulan-4,$tahun,$prov);   
+                        }
                     }
                     $data['rule_based_system'] = $this->user_model->get_rule();
                 } else {
