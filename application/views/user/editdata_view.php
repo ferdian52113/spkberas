@@ -142,8 +142,8 @@ else {
                                                 <div class="col-md-4">
                                                     <label>Terdapat Bencana Banjir</label><br>
                                                     <select name="banjir" required="true" class="form-control m-input m-input--air">
-                                                        <option <?php if($banjir==0) echo " selected"; ?>value="0">Tidak</option>
-                                                        <option <?php if($banjir==1) echo " selected"; ?>value="1">Ya</option>
+                                                        <option <?php if($banjir=='1') {echo " selected ";} ?>value="1">Ya</option>
+                                                        <option <?php if($banjir=='0') {echo " selected ";} ?>value="0">Tidak</option>
                                                     </select>
                                                 </div>
                                                 <div class="col-md-4">

@@ -303,7 +303,7 @@
                                         $rekomendasi3 = $rule->rekomendasi_3; 
                                     }
                                 }
-                                print_r('status HET : '.$status_HET.'<br>');
+                                /*print_r('status HET : '.$status_HET.'<br>');
                                 print_r('HET : '.$HET.'<br>');
                                 print_r('harga : '.$harga.'<br>');
                                 print_r('luastanam : '.$luas.'<br>');
@@ -317,7 +317,7 @@
                                 print_r('hama : '.$hama.'<br>');
                                 print_r('prosentaseHama : '.$prosentaseHama.'<br>');
                                 print_r('banjir : '.$banjir.'<br>');
-                                print_r('namarekomendasi : '.$namarekomendasi.'<br>');
+                                print_r('namarekomendasi : '.$namarekomendasi.'<br>');*/
 
                                 
 
@@ -497,8 +497,8 @@
                                               if($prediksi){
                                                   foreach ($data_prediksi as $hasil) {
                                                     $harga = "Rp ".number_format((float)$hasil['prediksi_harga'],2); 
-                                                    $produksi = number_format((float)$hasil['prediksi_produksi'],2) . " Ton";
-                                                    $luastanam = number_format((float)$hasil['prediksi_luastanam'],2) . " Ha"; 
+                                                    $produksi = number_format((float)abs($hasil['prediksi_produksi']),2) . " Ton";
+                                                    $luastanam = number_format((float)abs($hasil['prediksi_luastanam']),2) . " Ha"; 
                                                     if($data_prediksi_bulan_depan) {        
                                                             $harga_bulan_depan = "Rp ".number_format($data_prediksi_bulan_depan[0]['prediksi_harga'],2);
                                                     }
