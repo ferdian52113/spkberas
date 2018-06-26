@@ -155,8 +155,8 @@ class User extends CI_Controller {
                 $data['last_four_month'] = $this->user_model->trans_bulan($four_month_ago);   
 
                 $data['status_HET'] = $data['pengaturan'][0]['status_HET'];
-                $data['HET'] = $this->user_model->get_HET($prov);
-
+                $data['HET'] = $this->user_model->get_HET($prov,$date);
+                //print_r($data['HET']);exit();
                 $cek_data_aktual = $this->user_model->cek_waktu_aktual($bulan,$tahun,$prov);
                 $cek_data_prediksi = $this->user_model->cek_waktu_prediksi($bulan,$tahun,$prov);
 
@@ -863,7 +863,7 @@ class User extends CI_Controller {
         }
     }
 
-    public function editHET($id_provinsi){
+    public function editHET($id_het){
         if (!$this->session->userdata('username')) {
             $this->load->view('error');
         }
@@ -877,11 +877,20 @@ class User extends CI_Controller {
                 $this->load->view('user/setting_view',$data);
             }
             else {
-                $data_setting = array(                
-                        'HET'  => $this->clean($this->input->post('HET'))           
+                $tanggal_selesai = date('Y-m-d');
+                $data_HET = array(
+                        'date_end' => $tanggal_selesai
                 );
-                //print_r($data_setting);exit();
-                $this->user_model->updateData('id_provinsi',$id_provinsi,'provinsi',$data_setting);
+                $this->user_model->updateData('id_het',$id_het,'het',$data_HET);
+
+                $data['HET'] = $this->user_model->getHETlast($id_het);
+                $data_HET2 = array(
+                        'date_start' => $tanggal_selesai,
+                        'date_end' => '9999-12-31',
+                        'id_provinsi' => $data['HET'][0]->id_provinsi,
+                        'HET' => $this->clean($this->input->post('HET'))
+                );
+                $this->user_model->insertData('het',$data_HET2);
                 $this->session->set_flashdata('msg', '<div class="alert animated fadeInRight alert-success">Berhasil diupdate.</div>');
                 redirect('user/setting');
             }
@@ -1586,88 +1595,6 @@ class User extends CI_Controller {
 
         }
     }
-    
-
-    /*function holtWinterBuWiwik($tahun,$season_length, $alpha, $beta, $gamma,$loc) {
-    $data = array (194599,76497,121151,260823,222666,125537,61885,78181,50220,123550,282295,340623,148100,91611,166660,259635,185047,117545,96525,89635,42683,92042,257353,329541,206084,113830,141104,229219,235581,134658,136069,94785,105647,178140,258919,279910,176936,130045,134839,189167,212180,161052,115853,60388,65371,56844,222749,382951,222048,105671,102665,226562,254944,135609,110371,68651,60463,81077,240507,363323,216940,112426,112955,225483,247383,143133,132867,102240,65581,81148,183321,364507,245689,120827,124884,196627,218754,195425,129256,105910,73512,66793,176480,326378,278742,119919,100666,194599,247756,152509,94717,84967,69417,41005,87356,348383,121226,101740,191464,245142,152457,93894,83590,68699,34712,79631,348189,129427);
-    
-    $tahun_akhir_forecast=2016;
-    $length_forecast = ($tahun-$tahun_akhir_forecast)*12;
-    // Menghitung initial level
-    $initial_level = 0;
-        for($i = 0; $i < $season_length; $i++) {
-            $initial_level += $data[$i];
-        }
-    $initial_level /= $season_length;  
-
-    //Menghitung initial trend
-    $trend1 = 0;
-        for($i = 0; $i < $season_length; $i++) {
-            $trend1 += $data[$i];
-        }
-    $trend1 /= $season_length;
-    
-    $trend2 = 0;
-        for($i = $season_length; $i < 2*$season_length; $i++) {
-            $trend2 += $data[$i];
-        }
-    $trend2 /= $season_length;
-
-    $initial_trend = ($trend2 - $trend1) / $season_length;
-    
-    // Menghitung initial season
-    $season = array_fill(0, count($data), 0);
-        for($i = 0; $i < $season_length; $i++) {
-            $season[$i] = $data[$i] / $initial_level;
-        }
-    
-    $holt_winters = array_fill(0, count($data)+$length_forecast, 0);
-    $regression = array_fill(0, count($data)+$length_forecast, 0);
-    $level = $initial_level;
-    $trend = $initial_trend;
-
-    //print_r($season);print_r($trend);exit();
-    $m=1;
-        for($i=0;$i<count($data)+$length_forecast;$i++){
-            if($i<$season_length) {
-
-            } else if ($i>=count($data)){
-                $temp_level = $level;
-                $temp_trend = $trend;
-                $temp_data=$holt_winters[$i-12];
-                $level = ($alpha * ($temp_data/$season[$i-$season_length])) + ((1.0 - $alpha) * ($temp_level + $temp_trend));
-                $trend = $beta * ($level - $temp_level) + ((1.0 - $beta) * $temp_trend);
-                $season[$i] = $gamma * ($temp_data/$level) + (1.0 - $gamma) * $season[$i-$season_length];
-                $holt_winters[$i] = ($level + $trend) * $season[$i-$season_length];
-                echo ($i+1)." : ".$level."===".$trend."===".$season[$i]."===".$holt_winters[$i]."<br>";
-                $m++;
-            } else {
-                $temp_level = $level;
-                $temp_trend = $trend;
-                $level = ($alpha * ($data[$i]/$season[$i-$season_length])) + ((1.0 - $alpha) * ($temp_level + $temp_trend));
-                $trend = $beta * ($level - $temp_level) + ((1.0 - $beta) * $temp_trend);
-                $season[$i] = $gamma * ($data[$i]/$level) + (1.0 - $gamma) * $season[$i-$season_length];
-                $holt_winters[$i] = ($level + $trend) * $season[$i-$season_length];
-                echo ($i+1)." : ".$level."===".$trend."===".$season[$i]."===".$holt_winters[$i]."<br>";
-            }
-        }
-    //print_r($regression);
-        $a=1;
-        $k = count($holt_winters)-12;
-        for ($i=1; $i <= 12; $i++) { 
-                $tanggal = $tahun.'-'.$a.'-01';
-                $date_now = date("Y-m-d",strtotime($tanggal));
-
-                $data_prediksi = array(                
-                            'id_waktu'  => $date_now,
-                            'prediksi_luastanam'  => round($holt_winters[$k])          
-                );
-                print_r($data_prediksi); echo "<br>";
-                //$this->user_model->insertData('beras_prediksi2',$data_prediksi);
-                $a++;$k++;
-
-        }
-    }*/
 
     function clean($string) {
         $string = str_replace(' ', '', $string); // Replaces all spaces with hyphens.

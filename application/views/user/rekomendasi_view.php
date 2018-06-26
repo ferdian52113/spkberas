@@ -140,7 +140,7 @@
                                 $statusHET = $status_HET;
                                 $HET = $HET;
                                 if($aktual) {
-                                    $harga= $rekomendasi[0]['aktual_harga'];
+                                    $harga_beras= $rekomendasi[0]['aktual_harga'];
                                     $luas = $rekomendasi[0]['aktual_luastanam'];
                                     $prod = $rekomendasi[0]['aktual_produksi'];
                                     $curahhujan= $rekomendasi[0]['aktual_curahhujan'];
@@ -148,7 +148,7 @@
                                     $hama=$rekomendasi[0]['aktual_hama'];
                                     $luastanam4bulansebelum = $luas_tanam_empat_bulan_sebelum;
                                 } else {
-                                    $harga= $rekomendasi[0]['prediksi_harga'];
+                                    $harga_beras= $rekomendasi[0]['prediksi_harga'];
                                     $luas = $rekomendasi[0]['prediksi_luastanam'];
                                     $prod = $rekomendasi[0]['prediksi_produksi'];
                                     $curahhujan= $rekomendasi[0]['prediksi_curahhujan'];
@@ -159,11 +159,41 @@
 
                                 //Menentukan stabilitas harga dengan pendekatan HET atau Standar Deviasi 12 Bulan
                                 if ($status_HET=='YA') {
-                                    //Menggunakan pendekatan HET
-                                    if ($harga>$HET) {
-                                        $stabilitas_harga = 'Tidak Stabil';
+                                    //Jika bulan pilih sebelum sep 2017
+                                    if(!$HET) {
+                                        //Menggunakan pendekatan Standar Deviasi 12 Bulan
+                                        foreach ($stabilitas as $r) {            
+                                              if($aktual){          
+                                                $harga = $r['aktual_harga'];
+                                              } else {
+                                                $harga = $r['prediksi_harga'];
+                                              }  
+                                              $log_stab[] = log10(intval($harga)); 
+                                        }
+
+                                        $avg_stab = array_sum($log_stab) / count($log_stab);    
+
+                                          $a = 0; 
+                                          $i = 0;    
+                                          foreach ($log_stab as $row) {      
+                                            $a += pow(($log_stab[$i] - $avg_stab), 2);
+                                            $i++;
+                                          }
+                                          
+                                          $sta = sqrt($a/11)*100;
+                                          /*print_r($sta);*/ 
+                                          if ($sta <= 5) {
+                                            $stabilitas_harga = 'Stabil';                    
+                                          } else {
+                                            $stabilitas_harga = 'Tidak Stabil';                    
+                                          }  
                                     } else {
-                                        $stabilitas_harga = 'Stabil';
+                                        //Menggunakan pendekatan HET
+                                        if ($harga_beras>$HET) {
+                                            $stabilitas_harga = 'Tidak Stabil';
+                                        } else {
+                                            $stabilitas_harga = 'Stabil';
+                                        }
                                     }
                                 } else {
                                     //Menggunakan pendekatan Standar Deviasi 12 Bulan
@@ -303,9 +333,9 @@
                                         $rekomendasi3 = $rule->rekomendasi_3; 
                                     }
                                 }
-                                /*print_r('status HET : '.$status_HET.'<br>');
+                                print_r('status HET : '.$status_HET.'<br>');
                                 print_r('HET : '.$HET.'<br>');
-                                print_r('harga : '.$harga.'<br>');
+                                print_r('harga : '.$harga_beras.'<br>');
                                 print_r('luastanam : '.$luas.'<br>');
                                 print_r('luastanam4bulansebelum : '.$luastanam4bulansebelum.'<br>');
                                 print_r('produksi : '.$prod.'<br>');
@@ -317,7 +347,7 @@
                                 print_r('hama : '.$hama.'<br>');
                                 print_r('prosentaseHama : '.$prosentaseHama.'<br>');
                                 print_r('banjir : '.$banjir.'<br>');
-                                print_r('namarekomendasi : '.$namarekomendasi.'<br>');*/
+                                print_r('namarekomendasi : '.$namarekomendasi.'<br>');
 
                                 
 

@@ -110,11 +110,13 @@
                               $kode_kondisi = $set_value['id_kondisi'];
                               $nama_kondisi      = $set_value('nama_kondisi');
                               $kategori_kondisi   = $set_value('kategori_kondisi');
+                              $nama_kategori    = $set_value('nama_kategori');
                           }
                           else {
                               $kode_kondisi=$data['id_kondisi'];
                               $nama_kondisi=$data['nama_kondisi'];
                               $kategori_kondisi = $data['kategori_kondisi'];
+                              $nama_kategori = $data['nama_kategori'];
                           }
                         ?>
                         <tr>
@@ -125,7 +127,7 @@
                             <?php echo $data['nama_kondisi']; ?>
                           </td>
                           <td>
-                            <?php echo $data['kategori_kondisi'];?>
+                            <?php echo $data['nama_kategori'];?>
                           </td>
                           <td>
                               <button data-toggle="modal" data-target="#editKondisi<?php echo $kode_kondisi?>" class="btn m-btn m-btn--pill m-btn--air m-btn--gradient-from-danger m-btn--gradient-to-warning">Edit</button>
@@ -159,9 +161,10 @@
                                                 <div class="col-md-12">
                                                     <label>Kategori Kondisi</label>
                                                     <select name="kategori_kondisi" required="true" class="form-control m-input m-input--air">
-                                                        <option value="Harga" <?php if($kategori_kondisi=='Harga') echo "selected";?>>Harga</option>
-                                                        <option value="Musim" <?php if($kategori_kondisi=='Musim') echo "selected";?>>Musim</option>
-                                                        <option value="Bencana" <?php if($kategori_kondisi=='Bencana') echo "selected";?>>Bencana</option>
+                                                        <option value="1" <?php if($nama_kategori=='Harga') echo "selected";?>>Harga</option>
+                                                        <option value="2" <?php if($nama_kategori=='Musim') echo "selected";?>>Musim</option>
+                                                        <option value="3" <?php if($nama_kategori=='Bencana Alam') echo "selected";?>>Bencana Alam</option>
+                                                        <option value="4" <?php if($nama_kategori=='Hama') echo "selected";?>>Hama</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -210,9 +213,10 @@
                                 <div class="col-md-12">
                                     <label>Kategori Kondisi</label>
                                     <select name="kategori_kondisi" required="true" class="form-control m-input m-input--air">
-                                        <option value="Harga">Harga</option>
-                                        <option value="Musim">Musim</option>
-                                        <option value="Bencana">Bencana</option>
+                                        <option value="1">Harga</option>
+                                        <option value="2">Musim</option>
+                                        <option value="3">Bencana Alam</option>
+                                        <option value="4">Hama</option>
                                     </select>
                                 </div>
                             </div>

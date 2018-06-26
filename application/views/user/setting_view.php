@@ -139,6 +139,7 @@
                                                   <th>No</th>  
                                                   <th>Provinsi</th>      
                                                   <th>Harga Eceran Tertinggi</th>
+                                                  <th>Mulai Berlaku</th>
                                                   <th>Aksi</th>                   
                                               </tr>      
                                           </thead>
@@ -148,6 +149,9 @@
                                                   $no = 1; 
                                                   foreach ($pengaturan2 as $data) { 
                                                     $idProv=$data['id_provinsi'];
+                                                    $id_het=$data['id_het'];
+                                                    $waktu = new DateTime($data['date_start']);
+                                                    $waktu = $waktu->format("d M Y");
                                                     if($this->input->post('is_submitted')){
                                                         $HET = $set_value['HET'];
                                                     }
@@ -166,10 +170,13 @@
                                                       <?php echo "Rp ". number_format($data['HET'],0,".",".");?>
                                                     </td>
                                                     <td>
-                                                        <button data-toggle="modal" data-target="#editHET<?php echo $idProv?>" class="btn m-btn m-btn--pill m-btn--air m-btn--gradient-from-danger m-btn--gradient-to-warning">Edit</button>
+                                                      <?php echo $waktu; ?>
+                                                    </td>
+                                                    <td>
+                                                        <button data-toggle="modal" data-target="#editHET<?php echo $id_het?>" class="btn m-btn m-btn--pill m-btn--air m-btn--gradient-from-danger m-btn--gradient-to-warning">Update</button>
                                                     </td>
                                                   </tr>
-                                                  <div class="modal inmodal fade" id="editHET<?php echo $idProv?>" tabindex="-1" role="dialog"  aria-hidden="true">
+                                                  <div class="modal inmodal fade" id="editHET<?php echo $id_het?>" tabindex="-1" role="dialog"  aria-hidden="true">
                                                   <div class="modal-dialog">
                                                       <div class="modal-content">
                                                           <div class="modal-header">
@@ -179,7 +186,7 @@
                                                           <div class="modal-body">                
                                                             <div class="row">
                                                                     <div class="col-md-12">
-                                                                      <form action="<?php echo base_url('user/editHET/'.$idProv);?>" method="post">
+                                                                      <form action="<?php echo base_url('user/editHET/'.$id_het);?>" method="post">
                                                                       <div class="form-group m-form__group row">
                                                                           <div class="col-md-6">
                                                                               <label>Provinsi</label>

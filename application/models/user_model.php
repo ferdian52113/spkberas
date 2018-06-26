@@ -274,13 +274,13 @@ class User_model extends CI_Model {
         }
     //Kondisi
     public function get_kondisi() {
-        $sql = "select * from kondisi";
+        $sql = "select * from kondisi a JOIN kategori b ON a.kategori_kondisi=b.id_kategori";
         $query = $this->db->query($sql);
         return $query->result_array();
     }
 
     public function get_rekomendasi() {
-        $sql = "select * from rekomendasi order by no_rekomendasi";
+        $sql = "select * from rekomendasi";
         $query = $this->db->query($sql);
         return $query->result_array();
     }
@@ -292,17 +292,27 @@ class User_model extends CI_Model {
     }
 
     public function get_rule() {
-        $sql = "SELECT id_aturan,stabilitas_harga,musim,bencana,hama,kondisi_harga,kondisi_musim,kondisi_bencana,kondisi_hama,rekomendasi,i.* FROM (SELECT id_aturan,kondisi_harga,stabilitas_harga ,kondisi_musim,musim,kondisi_bencana,bencana,kondisi_hama,nama_kondisi as hama, rekomendasi FROM (SELECT id_aturan,kondisi_harga,stabilitas_harga ,kondisi_musim,musim,kondisi_bencana,nama_kondisi as bencana,kondisi_hama,rekomendasi FROM (SELECT id_aturan,kondisi_harga,stabilitas_harga ,kondisi_musim,nama_kondisi as musim,kondisi_bencana,kondisi_hama,rekomendasi FROM (SELECT id_aturan,kondisi_harga,nama_kondisi as stabilitas_harga ,kondisi_musim,kondisi_bencana,kondisi_hama,rekomendasi FROM aturan a LEFT JOIN kondisi b ON a.kondisi_harga=b.id_kondisi) b LEFT JOIN kondisi c ON b.kondisi_musim=c.id_kondisi) d LEFT JOIN kondisi e ON d.kondisi_bencana=e.id_kondisi) f LEFT JOIN kondisi g ON f.kondisi_hama=g.id_kondisi) h LEFT JOIN rekomendasi i ON h.rekomendasi=i.id_rekomendasi ORDER BY no_rekomendasi";
+        $sql = "SELECT id_aturan,stabilitas_harga,musim,bencana,hama,kondisi_harga,kondisi_musim,kondisi_bencana,kondisi_hama,rekomendasi,i.* FROM (SELECT id_aturan,kondisi_harga,stabilitas_harga ,kondisi_musim,musim,kondisi_bencana,bencana,kondisi_hama,nama_kondisi as hama, rekomendasi FROM (SELECT id_aturan,kondisi_harga,stabilitas_harga ,kondisi_musim,musim,kondisi_bencana,nama_kondisi as bencana,kondisi_hama,rekomendasi FROM (SELECT id_aturan,kondisi_harga,stabilitas_harga ,kondisi_musim,nama_kondisi as musim,kondisi_bencana,kondisi_hama,rekomendasi FROM (SELECT id_aturan,kondisi_harga,nama_kondisi as stabilitas_harga ,kondisi_musim,kondisi_bencana,kondisi_hama,rekomendasi FROM aturan a LEFT JOIN kondisi b ON a.kondisi_harga=b.id_kondisi) b LEFT JOIN kondisi c ON b.kondisi_musim=c.id_kondisi) d LEFT JOIN kondisi e ON d.kondisi_bencana=e.id_kondisi) f LEFT JOIN kondisi g ON f.kondisi_hama=g.id_kondisi) h LEFT JOIN rekomendasi i ON h.rekomendasi=i.id_rekomendasi";
         $query = $this->db->query($sql);
         return $query->result();
     }
     
 
 
-    public function get_HET($prov) {
-        $sql = "select HET from provinsi WHERE id_provinsi='$prov'";                
+    public function get_HET($prov,$date) {
+        $sql = "select HET from het WHERE id_provinsi=1 AND date_start <= '$date' AND date_end >'$date' ORDER BY id_provinsi";                
+        $query = $this->db->query($sql);
+        if ($query->num_rows() == 1) {
+            return $query->row()->HET;
+        } else {
+            return false;
+        }           
+    }
+
+    public function getHETlast($id_het) {
+        $sql = "select * from het WHERE id_het='$id_het'";                
         $query = $this->db->query($sql);           
-        return $query->row()->HET;
+        return $query->result();
     }
 
     public function get_setting1() {
@@ -312,7 +322,7 @@ class User_model extends CI_Model {
     }
 
     public function get_setting2() {
-        $sql = "select * from provinsi";
+        $sql = "select * from het a JOIN provinsi b ON a.id_provinsi=b.id_provinsi where a.date_end = '9999-12-31' ORDER BY a.id_provinsi";
         $query = $this->db->query($sql);
         return $query->result_array();
     }
