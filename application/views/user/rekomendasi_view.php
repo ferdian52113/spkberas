@@ -117,6 +117,8 @@
                                             <button type="action" class="btn m-btn--pill m-btn m-btn--gradient-from-primary m-btn--gradient-to-info tombolRekomendasi">
                                                 Lihat Rekomendasi
                                             </button>
+                                            <br></br>
+                                            <b><p style="color:red">* Jika memilih pendekatan HET dan HET tidak tersedia, maka aplikasi akan secara otomatis menggunakan pendekatan Standar Deviasi Harga 12 Bulan</p></b>
                                         </div>
                                     </div>
                                 </form>
@@ -333,7 +335,7 @@
                                         $rekomendasi3 = $rule->rekomendasi_3; 
                                     }
                                 }
-                                print_r('status HET : '.$status_HET.'<br>');
+                                /*print_r('status HET : '.$status_HET.'<br>');
                                 print_r('HET : '.$HET.'<br>');
                                 print_r('harga : '.$harga_beras.'<br>');
                                 print_r('luastanam : '.$luas.'<br>');
@@ -347,7 +349,7 @@
                                 print_r('hama : '.$hama.'<br>');
                                 print_r('prosentaseHama : '.$prosentaseHama.'<br>');
                                 print_r('banjir : '.$banjir.'<br>');
-                                print_r('namarekomendasi : '.$namarekomendasi.'<br>');
+                                print_r('namarekomendasi : '.$namarekomendasi.'<br>');*/
 
                                 
 
